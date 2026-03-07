@@ -2,12 +2,12 @@
 
 The LLM step (image analysis → PageSchema JSON) happens in the Copilot
 conversation. This script takes the resulting JSON and runs the local
-steps: validate against live Storybook + generate .stories.tsx code.
+steps: validate against live Storybook + generate a React .tsx page.
 
 Usage:
     # From a JSON file produced by Copilot:
     python pipeline.py schema.json
-    python pipeline.py schema.json --output MyPage.stories.tsx
+    python pipeline.py schema.json --output src/pages/MyPage.tsx
     python pipeline.py schema.json --validate-only
 
     # Or pipe JSON from stdin:
@@ -29,7 +29,7 @@ from schemas.json_schema import get_json_schema_str
 from schemas.loader import fetch_story_index
 from schemas.catalog_summary import build_catalog_summary
 from schemas.validator import validate_page
-from schemas.codegen import generate_story
+from schemas.codegen import generate_page
 
 
 def _print_summary(page: PageSchema) -> None:
@@ -88,15 +88,16 @@ def run_from_json(
         return page
 
     # ── Step 3: Generate code ──
-    print("\n🔧 Generating .stories.tsx...")
-    story_name = "".join(w.capitalize() for w in page.meta.title.split())
-    code = generate_story(page, story_name)
+    print("\n🔧 Generating page .tsx...")
+    component_name = "".join(w.capitalize() for w in page.meta.title.split())
+    code = generate_page(page, component_name)
 
     if output_path:
         out = Path(output_path)
     else:
-        out = Path(f"{story_name}.stories.tsx")
+        out = Path("src") / "pages" / f"{component_name}.tsx"
 
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(code)
     print(f"   ✓ Written to {out}")
 
@@ -126,14 +127,14 @@ def dump_prompt(storybook_url: str = "http://localhost:6006/index.json") -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="PageSchema JSON → Validate → Storybook code pipeline"
+        description="PageSchema JSON → Validate → React page pipeline"
     )
     parser.add_argument(
         "input",
         nargs="?",
         help="Path to PageSchema JSON file, or '-' for stdin",
     )
-    parser.add_argument("--output", "-o", help="Output .stories.tsx path")
+    parser.add_argument("--output", "-o", help="Output .tsx page path (default: src/pages/<Name>.tsx)")
     parser.add_argument(
         "--storybook-url",
         default="http://localhost:6006/index.json",

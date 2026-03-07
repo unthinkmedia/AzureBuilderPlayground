@@ -10,7 +10,7 @@ from schemas.page import (
     DetailTemplate, DetailSection,
     CustomTemplate,
 )
-from schemas.codegen import generate_story
+from schemas.codegen import generate_page
 
 
 def test_cards_grid():
@@ -28,10 +28,10 @@ def test_cards_grid():
             ],
         ),
     )
-    code = generate_story(page, "DashboardOverview")
+    code = generate_page(page, "DashboardOverview")
     print("=== CARDS-GRID ===")
     start = code.index("const DashboardOverview")
-    print(code[start : code.index("// ─── Stories")])
+    print(code[start:])
     return code
 
 
@@ -49,10 +49,10 @@ def test_form():
             submitLabel="Review + Create",
         ),
     )
-    code = generate_story(page, "CreateResource")
+    code = generate_page(page, "CreateResource")
     print("=== FORM ===")
     start = code.index("const CreateResource")
-    print(code[start : code.index("// ─── Stories")])
+    print(code[start:])
     return code
 
 
@@ -83,10 +83,10 @@ def test_detail_with_essentials():
             ],
         ),
     )
-    code = generate_story(page, "ResourceDetail")
+    code = generate_page(page, "ResourceDetail")
     print("=== DETAIL + ESSENTIALS + SIDE NAV ===")
     start = code.index("const ResourceDetail")
-    print(code[start : code.index("// ─── Stories")])
+    print(code[start:])
     return code
 
 
@@ -101,10 +101,10 @@ def test_custom():
             ],
         ),
     )
-    code = generate_story(page, "CustomPage")
+    code = generate_page(page, "CustomPage")
     print("=== CUSTOM (SRE container, no nav/title) ===")
     start = code.index("const CustomPage")
-    print(code[start : code.index("// ─── Stories")])
+    print(code[start:])
     return code
 
 

@@ -1,4 +1,4 @@
-"""Generate a Storybook .stories.tsx file from a validated PageSchema.
+"""Generate a plain React .tsx page component from a validated PageSchema.
 
 Maps the six PageSchema questions to actual React component code using
 the shared component library (AzureGlobalHeader, SREGlobalHeader,
@@ -13,7 +13,7 @@ from schemas.page import (
     DetailTemplate, CustomTemplate,
 )
 
-STORYBOOK_ROOT = "../../components"
+COMPONENT_ROOT = "@azure-storybook/components"
 
 
 def _indent(text: str, level: int = 1) -> str:
@@ -186,13 +186,13 @@ def _template_body(tpl) -> list[str]:
     return lines
 
 
-def generate_story(page: PageSchema, story_name: str = "GeneratedPage") -> str:
+def generate_page(page: PageSchema, component_name: str = "GeneratedPage") -> str:
     """
-    Generate a complete .stories.tsx file from a PageSchema.
+    Generate a complete React .tsx page component from a PageSchema.
 
     Returns the full file content as a string.
     """
-    meta_title = page.meta.title or story_name
+    meta_title = page.meta.title or component_name
 
     # Determine global header
     if page.container == ContainerType.AZURE:
@@ -342,7 +342,7 @@ def generate_story(page: PageSchema, story_name: str = "GeneratedPage") -> str:
 
     nav_type_import = ""
     if has_side_nav:
-        nav_type_import = "\nimport type { NavItem } from '../../components';"
+        nav_type_import = f"\nimport type {{ NavItem }} from '{COMPONENT_ROOT}';"
 
     # Styles
     styles_block = """const useStyles = makeStyles({
@@ -421,13 +421,12 @@ def generate_story(page: PageSchema, story_name: str = "GeneratedPage") -> str:
 
     # Assemble the file
     code = f"""import React from 'react';
-import type {{ Meta, StoryObj }} from '@storybook/react';
 import {{
   {',{0}  '.format(chr(10)).join(sorted(fluent_imports))},
 }} from '@fluentui/react-components';{icon_import_line}
 import {{
   {',{0}  '.format(chr(10)).join(sorted(component_imports))},
-}} from '../../components';{nav_type_import}
+}} from '{COMPONENT_ROOT}';{nav_type_import}
 
 // ─── Styles ──────────────────────────────────────────────────────
 
@@ -437,7 +436,7 @@ import {{
 {nav_const}{table_defs}
 // ─── Component ───────────────────────────────────────────────────
 
-const {story_name}: React.FC = () => {{
+const {component_name}: React.FC = () => {{
   const styles = useStyles();
   return (
     <div className={{styles.page}}>
@@ -447,19 +446,6 @@ const {story_name}: React.FC = () => {{
   );
 }};
 
-// ─── Stories ─────────────────────────────────────────────────────
-
-const meta: Meta = {{
-  title: 'Generated/{meta_title}',
-  tags: ['autodocs'],
-  parameters: {{ layout: 'fullscreen' }},
-}};
-
-export default meta;
-type Story = StoryObj;
-
-export const Default: Story = {{
-  render: () => <{story_name} />,
-}};
+export default {component_name};
 """
     return code
