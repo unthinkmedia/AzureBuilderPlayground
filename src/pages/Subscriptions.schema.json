@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "title": "Subscriptions",
+    "description": "Resource Manager subscriptions listing page",
+    "route": "/resource-manager/subscriptions",
+    "tags": ["resource-manager", "subscriptions", "management"]
+  },
+  "container": "azure",
+  "sideNav": {
+    "defaultSelected": "subscriptions",
+    "collapsible": true,
+    "closable": true,
+    "width": 220,
+    "entries": [
+      { "kind": "item", "key": "resource-manager", "label": "Resource Manager", "icon": "Settings" },
+      { "kind": "item", "key": "all-resources", "label": "All resources", "icon": "Grid" },
+      { "kind": "item", "key": "favorite-resources", "label": "Favorite resources", "icon": "Star" },
+      { "kind": "item", "key": "recent-resources", "label": "Recent resources", "icon": "Clock" },
+      { "kind": "item", "key": "resource-groups", "label": "Resource groups", "icon": "Folder" },
+      { "kind": "item", "key": "tags", "label": "Tags", "icon": "Tag" },
+      {
+        "kind": "group",
+        "label": "Organization",
+        "items": [
+          { "kind": "item", "key": "service-groups", "label": "Service groups", "icon": "People" },
+          { "kind": "item", "key": "management-groups", "label": "Management groups", "icon": "Organization" }
+        ]
+      },
+      { "kind": "item", "key": "subscriptions", "label": "Subscriptions", "icon": "Key" },
+      {
+        "kind": "group",
+        "label": "Tools",
+        "items": [
+          { "kind": "item", "key": "resource-graph-explorer", "label": "Resource graph explorer", "icon": "DataArea" },
+          { "kind": "item", "key": "resource-graph-queries", "label": "Resource graph queries", "icon": "Document" },
+          { "kind": "item", "key": "resource-visualizer", "label": "Resource visualizer", "icon": "Eye" },
+          { "kind": "item", "key": "resource-explorer", "label": "Resource explorer", "icon": "Search" },
+          { "kind": "item", "key": "arm-api-playground", "label": "ARM API playground", "icon": "Code" },
+          { "kind": "item", "key": "resource-mover", "label": "Resource mover", "icon": "ArrowMove" }
+        ]
+      },
+      {
+        "kind": "group",
+        "label": "Deployments",
+        "items": [
+          { "kind": "item", "key": "templates", "label": "Templates", "icon": "Document" },
+          { "kind": "item", "key": "template-specs", "label": "Template specs", "icon": "Document" }
+        ]
+      },
+      {
+        "kind": "group",
+        "label": "Help",
+        "items": [
+          { "kind": "item", "key": "support", "label": "Support + troubleshooting", "icon": "QuestionCircle" }
+        ]
+      }
+    ]
+  },
+  "title": {
+    "resourceName": "Resource Manager",
+    "pageName": "Subscriptions",
+    "icon": "Subscriptions",
+    "breadcrumbs": ["Home", "Resource Manager"],
+    "closable": true,
+    "moreActions": true
+  },
+  "essentials": null,
+  "commandBar": {
+    "items": [
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "add-btn",
+          "argOverrides": { "label": "Add", "icon": "Add" }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "manage-policies-btn",
+          "argOverrides": { "label": "Manage Policies", "icon": "Shield" }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "view-requests-btn",
+          "argOverrides": { "label": "View Requests", "icon": "List" }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "view-eligible-btn",
+          "argOverrides": { "label": "View eligible subscriptions", "icon": "Eye" }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "export-csv-btn",
+          "argOverrides": { "label": "Export to CSV", "icon": "ArrowDownload" }
+        },
+        "isSeparator": false
+      }
+    ]
+  },
+  "template": {
+    "kind": "list-table",
+    "description": "Showing subscriptions in Microsoft directory. Don't see a subscription? Switch directories",
+    "columns": [
+      { "key": "subscriptionName", "header": "Subscription name", "columnType": "link", "sortable": true },
+      { "key": "subscriptionId", "header": "Subscription ID", "columnType": "text", "sortable": true },
+      { "key": "myRole", "header": "My role", "columnType": "text", "sortable": true },
+      { "key": "currentCost", "header": "Current cost", "columnType": "text", "sortable": true },
+      { "key": "secureScore", "header": "Secure Score", "columnType": "text", "sortable": true }
+    ],
+    "filters": {
+      "searchable": true,
+      "searchPlaceholder": "Search for any ...",
+      "addFilters": true
+    },
+    "pagination": true
+  }
+}

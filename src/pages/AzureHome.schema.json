@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "title": "Azure Home",
+    "description": "Azure Portal home page with services, recent resources, navigate shortcuts, tools, and useful links",
+    "route": "/home",
+    "tags": ["home", "portal", "dashboard"]
+  },
+  "container": "azure",
+  "sideNav": null,
+  "title": null,
+  "essentials": null,
+  "commandBar": null,
+  "template": {
+    "kind": "custom",
+    "description": "Custom home page with Azure services row, recent resources table, navigate section, tools cards, useful links, and Azure mobile app promo"
+  }
+}

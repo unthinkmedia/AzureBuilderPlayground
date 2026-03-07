@@ -8,6 +8,10 @@ import {
 
 // ─── Import generated pages here ────────────────────────────────
 import PreviewFeatures from './pages/PreviewFeatures';
+import Subscriptions from './pages/Subscriptions';
+import AzureSREAgent from './pages/AzureSREAgent';
+import StaticWebApp from './pages/StaticWebApp';
+import AzureHome from './pages/AzureHome';
 
 const useStyles = makeStyles({
   root: {
@@ -43,6 +47,10 @@ const useStyles = makeStyles({
 // Register pages: add entries as you generate new pages.
 const pages: Record<string, React.FC> = {
   'Preview Features': PreviewFeatures,
+  'Subscriptions': Subscriptions,
+  'Azure SRE Agent': AzureSREAgent,
+  'Static Web App': StaticWebApp,
+  'Azure Home': AzureHome,
 };
 
 const App: React.FC = () => {
