@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "storybook": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "storybook-mcp"
+      ],
+      "env": {
+        "STORYBOOK_URL": "http://localhost:6006/index.json"
+      }
+    }
+  }
+}
