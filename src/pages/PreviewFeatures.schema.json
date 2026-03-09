@@ -7,6 +7,11 @@
       "entra",
       "directory",
       "preview"
+    ],
+    "jtbd": [
+      "When I want to try upcoming Azure capabilities, I want to browse available preview features, so I can evaluate new functionality before it becomes generally available.",
+      "When I find a relevant preview, I want to register for it directly, so I can enable it for my subscription without filing a support ticket.",
+      "When I need to track what previews I have opted into, I want to filter by registration status, so I can audit which experimental features are active."
     ]
   },
   "container": "azure",

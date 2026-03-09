@@ -3,7 +3,16 @@
     "title": "Azure Home",
     "description": "Azure Portal home page with services, recent resources, navigate shortcuts, tools, and useful links",
     "route": "/home",
-    "tags": ["home", "portal", "dashboard"]
+    "tags": [
+      "home",
+      "portal",
+      "dashboard"
+    ],
+    "jtbd": [
+      "When I open the Azure Portal, I want to see my recent resources and favorite services, so I can resume work without searching.",
+      "When I need to create a new resource, I want quick-access shortcuts to common services, so I can start provisioning immediately.",
+      "When I need to learn or troubleshoot, I want links to documentation, tutorials, and tools, so I can find guidance without leaving the portal."
+    ]
   },
   "container": "azure",
   "sideNav": null,

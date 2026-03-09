@@ -1,9 +1,18 @@
 {
   "meta": {
     "title": "Azure SRE Agent",
-    "description": "Azure SRE Agent – Agent Spaces browse page with empty state",
+    "description": "Azure SRE Agent - Agent Spaces browse page with empty state",
     "route": "/sre-agent/agent-spaces",
-    "tags": ["sre", "agents", "agent-spaces"]
+    "tags": [
+      "sre",
+      "agents",
+      "agent-spaces"
+    ],
+    "jtbd": [
+      "When I want to automate site reliability tasks, I want to browse existing agent spaces, so I can monitor and manage running agents.",
+      "When I encounter a new operational scenario, I want to create a new agent space, so I can configure AI-driven automation for that workflow.",
+      "When I am new to the service, I want a clear empty state with guidance, so I can understand the value and get started quickly."
+    ]
   },
   "container": "sre",
   "sideNav": null,
@@ -15,7 +24,10 @@
         "story": {
           "storyId": "components-button--primary",
           "instanceId": "create-agent-space-btn",
-          "argOverrides": { "label": "Create agent space", "icon": "Add" }
+          "argOverrides": {
+            "label": "Create agent space",
+            "icon": "Add"
+          }
         },
         "isSeparator": false
       },
@@ -23,7 +35,10 @@
         "story": {
           "storyId": "components-button--subtle",
           "instanceId": "refresh-btn",
-          "argOverrides": { "label": "Refresh", "icon": "ArrowSync" }
+          "argOverrides": {
+            "label": "Refresh",
+            "icon": "ArrowSync"
+          }
         },
         "isSeparator": false
       },
@@ -31,7 +46,10 @@
         "story": {
           "storyId": "components-button--subtle",
           "instanceId": "delete-btn",
-          "argOverrides": { "label": "Delete", "icon": "Delete" }
+          "argOverrides": {
+            "label": "Delete",
+            "icon": "Delete"
+          }
         },
         "isSeparator": false
       }
@@ -41,10 +59,30 @@
     "kind": "list-table",
     "description": "",
     "columns": [
-      { "key": "name", "header": "Name", "columnType": "link", "sortable": true },
-      { "key": "subscription", "header": "Subscription", "columnType": "text", "sortable": true },
-      { "key": "resourceGroup", "header": "Resource group", "columnType": "text", "sortable": true },
-      { "key": "region", "header": "Region", "columnType": "text", "sortable": true }
+      {
+        "key": "name",
+        "header": "Name",
+        "columnType": "link",
+        "sortable": true
+      },
+      {
+        "key": "subscription",
+        "header": "Subscription",
+        "columnType": "text",
+        "sortable": true
+      },
+      {
+        "key": "resourceGroup",
+        "header": "Resource group",
+        "columnType": "text",
+        "sortable": true
+      },
+      {
+        "key": "region",
+        "header": "Region",
+        "columnType": "text",
+        "sortable": true
+      }
     ],
     "filters": {
       "searchable": true,

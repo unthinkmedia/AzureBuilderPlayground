@@ -1,61 +1,61 @@
 {
   "meta": {
-    "title": "Subscriptions",
-    "description": "Resource Manager subscriptions listing page",
-    "route": "/resource-manager/subscriptions",
+    "title": "All Resources",
+    "description": "Resource Manager - All resources browse page with filterable data grid",
+    "route": "/resource-manager/all-resources",
     "tags": [
       "resource-manager",
-      "subscriptions",
-      "management"
+      "browse",
+      "list"
     ],
     "jtbd": [
-      "When I need to manage my Azure subscriptions, I want to view all subscriptions with their roles and costs, so I can govern access and spending across my organization.",
-      "When I need to add a new subscription, I want a clear entry point to create one, so I can onboard new teams or projects.",
-      "When I need to enforce compliance, I want to manage policies across subscriptions, so I can ensure organizational standards are met."
+      "When I need to find a specific resource across my subscriptions, I want to search, filter, and browse all resources in one place, so I can quickly locate and act on any resource regardless of type or resource group.",
+      "When I need to perform bulk operations, I want to multi-select resources and apply tags or delete them, so I can manage resources at scale.",
+      "When I need to export resource data for reporting, I want to export the filtered list to CSV, so I can share inventory information with stakeholders."
     ]
   },
   "container": "azure",
   "sideNav": {
-    "defaultSelected": "subscriptions",
+    "defaultSelected": "all-resources",
     "collapsible": true,
-    "closable": true,
+    "closable": false,
     "width": 220,
     "entries": [
       {
         "kind": "item",
         "key": "resource-manager",
         "label": "Resource Manager",
-        "icon": "Settings"
+        "icon": "resource-manager"
       },
       {
         "kind": "item",
         "key": "all-resources",
         "label": "All resources",
-        "icon": "Grid"
+        "icon": "all-resources"
       },
       {
         "kind": "item",
         "key": "favorite-resources",
         "label": "Favorite resources",
-        "icon": "Star"
+        "icon": "favorites"
       },
       {
         "kind": "item",
         "key": "recent-resources",
         "label": "Recent resources",
-        "icon": "Clock"
+        "icon": "recent"
       },
       {
         "kind": "item",
         "key": "resource-groups",
         "label": "Resource groups",
-        "icon": "Folder"
+        "icon": "resource-groups"
       },
       {
         "kind": "item",
         "key": "tags",
         "label": "Tags",
-        "icon": "Tag"
+        "icon": "tags"
       },
       {
         "kind": "group",
@@ -65,21 +65,21 @@
             "kind": "item",
             "key": "service-groups",
             "label": "Service groups",
-            "icon": "People"
+            "icon": "people"
           },
           {
             "kind": "item",
             "key": "management-groups",
             "label": "Management groups",
-            "icon": "Organization"
+            "icon": "management-groups"
+          },
+          {
+            "kind": "item",
+            "key": "subscriptions",
+            "label": "Subscriptions",
+            "icon": "subscriptions"
           }
         ]
-      },
-      {
-        "kind": "item",
-        "key": "subscriptions",
-        "label": "Subscriptions",
-        "icon": "Key"
       },
       {
         "kind": "group",
@@ -89,37 +89,37 @@
             "kind": "item",
             "key": "resource-graph-explorer",
             "label": "Resource graph explorer",
-            "icon": "DataArea"
+            "icon": "resource-graph-explorer"
           },
           {
             "kind": "item",
             "key": "resource-graph-queries",
             "label": "Resource graph queries",
-            "icon": "Document"
+            "icon": "resource-graph-queries"
           },
           {
             "kind": "item",
             "key": "resource-visualizer",
             "label": "Resource visualizer",
-            "icon": "Eye"
+            "icon": "resource-visualizer"
           },
           {
             "kind": "item",
             "key": "resource-explorer",
             "label": "Resource explorer",
-            "icon": "Search"
+            "icon": "resource-explorer"
           },
           {
             "kind": "item",
             "key": "arm-api-playground",
             "label": "ARM API playground",
-            "icon": "Code"
+            "icon": "arm-api-playground"
           },
           {
             "kind": "item",
             "key": "resource-mover",
             "label": "Resource mover",
-            "icon": "ArrowMove"
+            "icon": "resource-mover"
           }
         ]
       },
@@ -131,13 +131,13 @@
             "kind": "item",
             "key": "templates",
             "label": "Templates",
-            "icon": "Document"
+            "icon": "templates"
           },
           {
             "kind": "item",
             "key": "template-specs",
             "label": "Template specs",
-            "icon": "Document"
+            "icon": "template-specs"
           }
         ]
       },
@@ -149,7 +149,7 @@
             "kind": "item",
             "key": "support",
             "label": "Support + troubleshooting",
-            "icon": "QuestionCircle"
+            "icon": "help-support"
           }
         ]
       }
@@ -157,13 +157,13 @@
   },
   "title": {
     "resourceName": "Resource Manager",
-    "pageName": "Subscriptions",
-    "icon": "Subscriptions",
+    "pageName": "All resources",
+    "icon": "all-resources",
     "breadcrumbs": [
       "Home",
       "Resource Manager"
     ],
-    "closable": true,
+    "closable": false,
     "moreActions": true
   },
   "essentials": null,
@@ -172,9 +172,9 @@
       {
         "story": {
           "storyId": "components-button--subtle",
-          "instanceId": "add-btn",
+          "instanceId": "create-btn",
           "argOverrides": {
-            "label": "Add",
+            "label": "Create",
             "icon": "Add"
           }
         },
@@ -183,32 +183,21 @@
       {
         "story": {
           "storyId": "components-button--subtle",
-          "instanceId": "manage-policies-btn",
+          "instanceId": "manage-view-btn",
           "argOverrides": {
-            "label": "Manage Policies",
-            "icon": "Shield"
-          }
-        },
-        "isSeparator": false
-      },
-      {
-        "story": {
-          "storyId": "components-button--subtle",
-          "instanceId": "view-requests-btn",
-          "argOverrides": {
-            "label": "View Requests",
-            "icon": "List"
-          }
-        },
-        "isSeparator": false
-      },
-      {
-        "story": {
-          "storyId": "components-button--subtle",
-          "instanceId": "view-eligible-btn",
-          "argOverrides": {
-            "label": "View eligible subscriptions",
+            "label": "Manage view",
             "icon": "Eye"
+          }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "refresh-btn",
+          "argOverrides": {
+            "label": "Refresh",
+            "icon": "ArrowSync"
           }
         },
         "isSeparator": false
@@ -223,49 +212,113 @@
           }
         },
         "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "open-query-btn",
+          "argOverrides": {
+            "label": "Open query",
+            "icon": "Open"
+          }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": null,
+        "isSeparator": true
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "assign-tags-btn",
+          "argOverrides": {
+            "label": "Assign tags",
+            "icon": "Tag"
+          }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "delete-btn",
+          "argOverrides": {
+            "label": "Delete",
+            "icon": "Delete"
+          }
+        },
+        "isSeparator": false
+      },
+      {
+        "story": {
+          "storyId": "components-button--subtle",
+          "instanceId": "add-service-group-btn",
+          "argOverrides": {
+            "label": "Add to service group",
+            "icon": "Add"
+          }
+        },
+        "isSeparator": false
       }
     ]
   },
   "template": {
     "kind": "list-table",
-    "description": "Showing subscriptions in Microsoft directory. Don't see a subscription? Switch directories",
+    "description": "",
     "columns": [
       {
-        "key": "subscriptionName",
-        "header": "Subscription name",
+        "key": "name",
+        "header": "Name",
         "columnType": "link",
-        "sortable": true
+        "sortable": true,
+        "filterable": false,
+        "width": "",
+        "truncate": false
       },
       {
-        "key": "subscriptionId",
-        "header": "Subscription ID",
+        "key": "type",
+        "header": "Type",
         "columnType": "text",
-        "sortable": true
+        "sortable": true,
+        "filterable": false,
+        "width": "",
+        "truncate": false
       },
       {
-        "key": "myRole",
-        "header": "My role",
-        "columnType": "text",
-        "sortable": true
+        "key": "resourceGroup",
+        "header": "Resource Group",
+        "columnType": "link",
+        "sortable": true,
+        "filterable": false,
+        "width": "",
+        "truncate": false
       },
       {
-        "key": "currentCost",
-        "header": "Current cost",
+        "key": "location",
+        "header": "Location",
         "columnType": "text",
-        "sortable": true
+        "sortable": true,
+        "filterable": false,
+        "width": "",
+        "truncate": false
       },
       {
-        "key": "secureScore",
-        "header": "Secure Score",
-        "columnType": "text",
-        "sortable": true
+        "key": "subscription",
+        "header": "Subscription",
+        "columnType": "link",
+        "sortable": true,
+        "filterable": false,
+        "width": "",
+        "truncate": false
       }
     ],
     "filters": {
       "searchable": true,
-      "searchPlaceholder": "Search for any ...",
+      "searchPlaceholder": "Filter for any field...",
       "addFilters": true
     },
-    "pagination": true
+    "pagination": true,
+    "rowActions": []
   }
 }

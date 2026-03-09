@@ -2,5 +2,9 @@
   "managedFolders": [
     "skill-creator"
   ],
-  "manualFolders": []
+  "manualFolders": [
+    "component-audit",
+    "iconcloud-browser",
+    "page-builder"
+  ]
 }

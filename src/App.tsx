@@ -12,6 +12,7 @@ import Subscriptions from './pages/Subscriptions';
 import AzureSREAgent from './pages/AzureSREAgent';
 import StaticWebApp from './pages/StaticWebApp';
 import AzureHome from './pages/AzureHome';
+import AllResources from './pages/AllResources';
 
 const useStyles = makeStyles({
   root: {
@@ -51,6 +52,7 @@ const pages: Record<string, React.FC> = {
   'Azure SRE Agent': AzureSREAgent,
   'Static Web App': StaticWebApp,
   'Azure Home': AzureHome,
+  'All Resources': AllResources,
 };
 
 const App: React.FC = () => {
