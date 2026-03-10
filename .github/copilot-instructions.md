@@ -1,0 +1,56 @@
+# Copilot Instructions — Azure Builder Playground
+
+## Pre-Flight Checks
+
+Before doing any work on the user's first prompt, run these checks silently and fix anything missing:
+
+### 1. Dependencies
+Check if `node_modules/` exists. If not, run `npm install` automatically.
+
+### 2. Dev Server
+Check if the Vite dev server is running (port 5173). If not, start it with `npm run dev` in a background terminal.
+
+### 3. Experiment Metadata
+Check if `experiment.json` still has the default placeholder values (`"My Experiment"` / `"A playground for rapid prototyping"`). If so, infer a name and description from the user's first prompt and update the file automatically. For example:
+- "Build me a VM overview page" → `{ "name": "Virtual Machine Overview", "description": "Azure VM resource overview page prototype" }`
+- "Create a storage account browse page" → `{ "name": "Storage Account Browser", "description": "Browse and manage storage accounts" }`
+
+### 4. MCP Server Availability
+If you attempt to use Storybook MCP tools and they aren't available, tell the user:
+> "The Storybook MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **storybook**."
+
+If you attempt to use Playwright MCP tools and they aren't available, tell the user:
+> "The Playwright MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **playwright**."
+
+If the user's prompt involves a Figma URL or mentions Figma and the Figma MCP tools aren't available, tell the user:
+> "The Figma MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **figma**. You'll need a Figma API key — get one at figma.com/developers."
+
+## Workspace Conventions
+
+- Each repo is a single experiment with one `src/main/` and optional `src/variations/`
+- The shell (`src/shell/App.tsx`) auto-discovers all versions via `import.meta.glob` — never manually register pages
+- Use `@fluentui/react-components` for UI primitives and `makeStyles` + `tokens` for styling
+- Never hardcode colors, fonts, or spacing — always use Fluent tokens
+- Variation names use kebab-case
+
+## Azure URL Handling
+
+When the user's prompt contains an Azure Portal URL (anything matching `portal.azure.com`, `azure.microsoft.com`, or similar Microsoft domains):
+
+### Why Playwright, not VS Code's browser
+VS Code's integrated browser blocks authentication flows from Microsoft/Entra ID accounts. Azure Portal pages require sign-in, so the built-in browser will fail. **Always use Playwright** to open Azure URLs.
+
+### Procedure
+1. **Launch Playwright in headed (non-headless) mode** so the user can see the browser window and authenticate.
+2. Navigate to the Azure URL.
+3. **Pause and tell the user:**
+   > "A browser window has opened. Please sign in with your Azure account. Let me know once you're on the page you want me to capture."
+4. **Wait for the user to confirm** they've signed in and the page has loaded.
+5. Take a screenshot and/or snapshot of the page to use as the design reference.
+6. Close the browser or keep it open if the user needs to navigate to additional pages.
+
+### Important
+- **Never** attempt to open Azure URLs in VS Code's integrated browser or an iframe.
+- **Never** try to automate the Microsoft login flow — let the user authenticate manually in the headed browser.
+- If Playwright MCP is not running, prompt the user to start it before proceeding.
+- The user may need to navigate through the portal (click into a resource, switch tabs) before the page is ready to capture — wait for their confirmation.

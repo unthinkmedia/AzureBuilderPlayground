@@ -4,89 +4,111 @@ A rapid prototyping environment for building Azure Portal page experiments using
 
 ---
 
-## Getting Your Own Copy
+## Getting Started (Step by Step)
 
-### Option A: Use as a Template (Recommended)
+### Step 1: Get your own copy of this project
 
 1. Go to [github.com/unthinkmedia/AzureBuilderPlayground](https://github.com/unthinkmedia/AzureBuilderPlayground)
-2. Click the green **"Use this template"** button (top right, next to "Code")
-3. Select **"Create a new repository"**
-4. Choose your GitHub account as the **Owner**
+2. Click the green **"Use this template"** button (top right)
+3. Click **"Create a new repository"**
+4. Pick **your GitHub account** as the Owner
 5. Give it a name (e.g., `my-azure-experiment`)
-6. Choose **Public** or **Private**
-7. Click **"Create repository"**
-8. Clone your new repo locally:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/my-azure-experiment.git
-   cd my-azure-experiment
-   ```
+6. Click **"Create repository"**
 
-This creates a clean copy with no link back to the original — perfect for starting fresh.
+You now have your own copy on GitHub. The original is not affected.
 
-### Option B: Fork the Repo
+### Step 2: Choose a folder on your computer
 
-Use this if you want to stay connected to the upstream repo and pull future updates.
+Create a folder wherever you want your project to live (e.g., on your Desktop, in Documents, etc.). Then open **Terminal** and navigate to it:
 
-1. Go to [github.com/unthinkmedia/AzureBuilderPlayground](https://github.com/unthinkmedia/AzureBuilderPlayground)
-2. Click **"Fork"** (top right)
-3. Select your GitHub account as the destination
-4. Clone your fork:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/AzureBuilderPlayground.git
-   cd AzureBuilderPlayground
-   ```
-5. To pull future updates from the original:
-   ```bash
-   git remote add upstream https://github.com/unthinkmedia/AzureBuilderPlayground.git
-   git fetch upstream
-   git merge upstream/main
-   ```
+- **Option A — Drag and drop:** Open Terminal, type `cd ` (with a space after it), then **drag the folder from Finder into the Terminal window**. It fills in the path for you. Press Enter.
+- **Option B — Type it manually:**
+  ```bash
+  cd ~/Desktop/my-projects
+  ```
 
-### Option C: Manual Copy (No GitHub UI)
+### Step 3: Copy the repo URL and clone it
 
-Clone the repo, remove the git history, and push to your own account:
+1. Go to **your new repo** on GitHub (the one you just created from the template)
+2. Click the green **"<> Code"** button
+3. Make sure **HTTPS** is selected
+4. Click the **copy icon** (📋) to copy the URL — it will look like `https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git`
+
+Now go back to your Terminal (which should be in the folder from Step 2) and run:
 
 ```bash
-# Clone the original
-git clone https://github.com/unthinkmedia/AzureBuilderPlayground.git my-experiment
-cd my-experiment
+# Paste the URL you just copied after "git clone"
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
 
-# Remove the original git history
-rm -rf .git
+# Move into the project folder
+cd YOUR_REPO_NAME
 
-# Initialize a fresh repo
-git init
-git add .
-git commit -m "Initial commit from AzureBuilderPlayground"
-
-# Create a new repo on GitHub (via github.com or GitHub CLI), then push:
-git remote add origin https://github.com/YOUR_USERNAME/my-experiment.git
-git branch -M main
-git push -u origin main
+# Open it in VS Code Insiders
+code-insiders .
 ```
 
-### After Cloning
+> **Example:** If your repo URL is `https://github.com/jsmith/my-azure-experiment.git`:
+> ```bash
+> git clone https://github.com/jsmith/my-azure-experiment.git
+> cd my-azure-experiment
+> code-insiders .
+> ```
 
-```bash
-# Install Node dependencies
-npm install
+### Step 4: Start the MCP servers
 
-# (Optional) Set up the Python environment for the schema pipeline
-python -m venv .venv
-source .venv/bin/activate   # macOS/Linux
-pip install -e .
+The project comes with pre-configured MCP servers that give Copilot extra capabilities. Start them from VS Code:
 
-# Start developing
-npm run dev
+1. Open the **Command Palette** (`Cmd+Shift+P` on Mac, `Ctrl+Shift+P` on Windows)
+2. Type **"MCP: List Servers"** and select it
+3. Start each server you need:
+
+| Server | Required? | What it does |
+|--------|-----------|-------------|
+| **storybook** | Yes | Gives Copilot access to the shared Azure component library — components, props, and usage examples |
+| **playwright** | Yes | Lets Copilot automate a browser — take screenshots, navigate pages, capture reference designs |
+| **figma** | Optional | Connects Copilot to Figma for reading designs directly. You'll be prompted for a Figma API key on first start (get one at [figma.com/developers](https://www.figma.com/developers/api#access-tokens)) |
+
+All servers are already configured in `.vscode/mcp.json` — just click **"Start"** next to each one. You only need to start them once per session.
+
+> **Don't worry if you forget** — if Copilot needs a server that isn't running, it will remind you which one to start and how.
+
+### Step 5: Start prompting!
+
+That's it — just ask Copilot to build something. Everything else is handled automatically:
+
+- **Dependencies** — Copilot runs `npm install` if `node_modules` is missing
+- **Dev server** — Copilot starts `npm run dev` if the Vite server isn't running
+- **Experiment name** — Copilot fills in `experiment.json` based on your first prompt
+
+You can describe what you want in plain text, or give Copilot a visual reference to work from:
+
+| Input | How to use it |
+|-------|--------------|
+| **Text description** | Just describe the page you want in your prompt |
+| **Screenshot** | Paste or attach a screenshot of an Azure Portal page and say "recreate this" |
+| **URL to an Azure page** | Paste a URL and Copilot will use Playwright to capture and analyze the live page |
+| **Figma link** | Paste a Figma file/frame URL and Copilot will pull the design directly (requires the Figma MCP server) |
+
+**Example prompts:**
+
+```
+Build me an Azure Virtual Machines overview page
 ```
 
-Update `experiment.json` with your experiment's name and description:
+```
+Create a Storage Account browse page with a table
+```
 
-```json
-{
-  "name": "My Experiment Name",
-  "description": "What I'm prototyping"
-}
+```
+Recreate this portal page (+ attach a screenshot)
+```
+
+```
+Build this page: https://portal.azure.com/#view/Microsoft_Azure_Monitoring/AzureMonitoringBrowseBlade
+```
+
+```
+Build a page from this Figma design: https://www.figma.com/design/abc123/My-Design
 ```
 
 ---
