@@ -20,7 +20,7 @@ Build Azure Portal pages using the Pydantic PageSchema pipeline. This skill take
 - **Pipeline CLI:** `python pipeline.py schema.json` (parse → validate → generate)
 - **Pages directory:** `src/pages/` — each page is a `<Name>.tsx` + `<Name>.schema.json` pair
 - **App registry:** `src/App.tsx` — import and add to the `pages` record
-- **Shared components:** `@azure-storybook/components` (aliased to `../AzureStorybook/src`)
+- **Shared components & themes:** `@azure-fluent-storybook/components` (npm package — installed via `package.json`). Both components and themes are exported from this single package.
 - **UI library:** `@fluentui/react-components` + `@fluentui/react-icons`
 
 ## Step-by-Step Workflow
@@ -29,13 +29,14 @@ Follow these steps in order. Do not skip steps.
 
 ### Step 0: Query Storybook MCP (MANDATORY — do this FIRST)
 
-Before writing any component code, you MUST consult Storybook MCP:
+Before writing any component code, you MUST consult Storybook MCP to understand each component's API, variants, best practices, and gotchas:
 
 1. Call `getComponentList` to see all available composed components and templates.
 2. Identify which Storybook components match the page you're building (PageHeader, CommandBar, FilterBar, DataGrid, SideNavigation, Azure Container, Resource List Page template, etc.).
-3. Call `getComponentsProps` for every component you plan to use to understand its API surface.
-4. **Only** drop to raw `@fluentui/react-components` for elements that have no Storybook equivalent.
-5. **NEVER import `@azure-storybook/*` as npm packages** — they are design-time references from Storybook MCP, not published to npm.
+3. Call `getComponentsProps` for **every component you plan to use** — read the full Storybook documentation for each one. This tells you the correct props, available variants, do's and don'ts, and usage patterns. This is critical for greenfield builds and when modifying existing designs.
+4. Import components **and themes** from `@azure-fluent-storybook/components` — this is a real npm package in the project dependencies. Both components and themes are exported from this single package.
+5. **Only** drop to raw `@fluentui/react-components` for elements that have no equivalent in `@azure-fluent-storybook/components`.
+6. The Storybook docs often contain helpful information about composition patterns, accessibility, and edge cases — always read them before writing code.
 
 If Storybook MCP is not running, STOP and tell the user:
 > "The Storybook MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **storybook**."
@@ -118,7 +119,7 @@ Build the TSX by hand, following the established patterns. Read existing pages i
 Read `references/component-catalog.md` for the full list of available shared components and their props.
 
 When building by hand:
-- Import shared components from `@azure-storybook/components` — NEVER recreate what already exists
+- Import shared components from `@azure-fluent-storybook/components` — NEVER recreate what already exists
 - Use `@fluentui/react-components` for standard UI primitives
 - Use `makeStyles` + `tokens` for styling (never hardcode colors/fonts)
 - Follow the page layout structure from existing pages
@@ -151,7 +152,7 @@ After completing the page, produce a structured build report. This is mandatory 
 - `src/App.tsx` — Registered page as "<Display Name>"
 
 ### Shared Components Used
-List every component imported from `@azure-storybook/components`:
+List every component imported from `@azure-fluent-storybook/components`:
 - `AzureGlobalHeader` — Top application bar
 - `PageHeader` — Title with icon, pin, more-actions
 - (etc.)
@@ -188,7 +189,7 @@ If none, state: "None — all UI composed from shared components."
 
 ## Important Rules
 
-- **NEVER recreate shared components.** Before building any custom UI element, check if `@azure-storybook/components` already provides it. Read `references/component-catalog.md`.
+- **NEVER recreate shared components.** Before building any custom UI element, check if `@azure-fluent-storybook/components` already provides it. Call `getComponentList` from Storybook MCP to verify. Read `references/component-catalog.md`.
 - **NEVER hardcode colors or fonts.** Always use Fluent `tokens.*` values.
 - **NEVER skip the build report.** The report is the final deliverable alongside the code.
 - **Use `makeStyles`** for all styling. No inline CSS objects except for truly dynamic values.

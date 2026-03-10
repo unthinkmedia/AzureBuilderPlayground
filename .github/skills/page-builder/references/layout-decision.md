@@ -54,4 +54,4 @@ The page fills the entire width. No side navigation.
 
 - Content sidebars (e.g., category filters, list panels) are NOT the same as side navigation — they go inside the content area of a full-width layout
 - Multi-page flows can mix layouts: Browse (full) → Create (full) → Detail (side panel)
-- The side nav uses `SideNavigation` from `@azure-storybook/components` with `NavItem[]`
+- The side nav uses `SideNavigation` from `@azure-fluent-storybook/components` with `NavItem[]`

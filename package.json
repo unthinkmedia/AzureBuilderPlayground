@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure-fluent-storybook/components": "latest",
     "@fluentui/react-components": "^9.56.0",
     "@fluentui/react-icons": "^2.0.260",
     "react": "^18.3.1",

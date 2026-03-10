@@ -16,10 +16,12 @@ Check if `experiment.json` still has the default placeholder values (`"My Experi
 - "Create a storage account browse page" → `{ "name": "Storage Account Browser", "description": "Browse and manage storage accounts" }`
 
 ### 4. Storybook MCP (Mandatory)
-Storybook MCP is the primary source for Azure Portal components and themes. Before building any page or UI:
+Storybook MCP is the primary documentation and discovery source for Azure Portal components. Before building any page or UI:
 1. Verify Storybook MCP is running by calling `getComponentList`.
 2. If it's not available, stop and tell the user (see below).
-3. Query `getComponentsProps` for every component you plan to use — do NOT import packages like `@azure-storybook/themes` from npm; they don't exist there.
+3. Call `getComponentsProps` for every component you plan to use — **read the Storybook documentation first** to understand props, variants, usage patterns, and best practices before writing any code. This is especially important for greenfield builds and when modifying existing designs.
+4. Import components **and themes** from `@azure-fluent-storybook/components` (an npm package already in the project's dependencies). Both components and themes are exported from this single package.
+5. Only drop to raw `@fluentui/react-components` for elements that have no equivalent in `@azure-fluent-storybook/components`.
 
 ### 5. MCP Server Availability
 If you attempt to use Storybook MCP tools and they aren't available, tell the user:
@@ -35,10 +37,10 @@ If the user's prompt involves a Figma URL or mentions Figma and the Figma MCP to
 
 - Each repo is a single experiment with one `src/main/` and optional `src/variations/`
 - The shell (`src/shell/App.tsx`) auto-discovers all versions via `import.meta.glob` — never manually register pages
-- **Storybook-first**: Before writing any component code, call `getComponentList` and `getComponentsProps` from Storybook MCP. Use composed/template components (PageHeader, CommandBar, FilterBar, DataGrid, SideNavigation, Azure Container, Resource List Page, etc.) instead of building from raw Fluent primitives. Only drop to raw `@fluentui/react-components` for elements that have no Storybook equivalent.
+- **Storybook-first**: Before writing any component code, call `getComponentList` and `getComponentsProps` from Storybook MCP. **Read the Storybook docs for each component** to understand its API, variants, best practices, and gotchas — then import the component from `@azure-fluent-storybook/components`. Use composed/template components (PageHeader, CommandBar, FilterBar, DataGrid, SideNavigation, Azure Container, Resource List Page, etc.) instead of building from raw Fluent primitives. Only drop to raw `@fluentui/react-components` for elements that have no Storybook equivalent.
+- **Component imports**: `@azure-fluent-storybook/components` for shared Azure Portal components **and** themes — this is a real npm package installed via `package.json`
 - Use `@fluentui/react-components` for UI primitives and `makeStyles` + `tokens` for styling
 - Never hardcode colors, fonts, or spacing — always use Fluent tokens
-- **Never import `@azure-storybook/*` as npm packages** — these are provided by Storybook MCP at design time, not published to npm
 - Variation names use kebab-case
 
 ## Azure URL Handling

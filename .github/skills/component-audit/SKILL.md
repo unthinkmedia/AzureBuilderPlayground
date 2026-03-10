@@ -12,7 +12,7 @@ description: >
 # Component Audit
 
 Scan page `.tsx` files for custom HTML/CSS patterns that duplicate functionality already
-provided by the **AzureStorybook** shared component library or **Fluent UI v9**. The goal
+provided by the **@azure-fluent-storybook/components** shared component library or **Fluent UI v9**. The goal
 is to surface every piece of hand-rolled UI that has a ready-made replacement so the
 developer can decide whether to swap it in.
 
@@ -27,14 +27,8 @@ developer can decide whether to swap it in.
 ### Step 1 — Load the component registry
 
 Read the AzureStorybook component registry to get the authoritative list of shared
-components and their capabilities:
-
-```
-../AzureStorybook/src/component-registry.json
-```
-
-Parse each entry's `name` and `stories` array. The `stories` tell you what variants and
-use-cases the component already covers.
+components and their capabilities. Call `getComponentList` and `getComponentsProps` from
+Storybook MCP to get the latest component information.
 
 Also reference the component catalog doc for props and usage patterns:
 
@@ -48,7 +42,7 @@ If the user specifies a file, audit that file. Otherwise, audit all `.tsx` files
 `src/pages/`.
 
 For each file, extract:
-1. **Imports** — which `@azure-storybook/components` and `@fluentui/react-components`
+1. **Imports** — which `@azure-fluent-storybook/components` and `@fluentui/react-components`
    are already being used
 2. **Style definitions** — all keys inside `makeStyles({...})`
 3. **JSX markup** — the rendered component tree
@@ -112,7 +106,7 @@ Output a structured report in this format:
 ### 1. [Description of custom element]
 - **Location:** Lines X–Y
 - **What it does:** [brief description]
-- **Suggested replacement:** `ComponentName` from `@azure-storybook/components`
+- **Suggested replacement:** `ComponentName` from `@azure-fluent-storybook/components`
 - **Confidence:** High / Medium / Low
 - **Notes:** [why this is or isn't a clear swap]
 

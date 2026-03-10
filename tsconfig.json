@@ -15,10 +15,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "paths": {
-      "@azure-storybook/*": ["../AzureStorybook/src/*"]
-    }
+    "baseUrl": "."
   },
-  "include": ["src", "../AzureStorybook/src"]
+  "include": ["src"]
 }

@@ -13,7 +13,7 @@ from schemas.page import (
     DetailTemplate, CustomTemplate,
 )
 
-COMPONENT_ROOT = "@azure-storybook/components"
+COMPONENT_ROOT = "@azure-fluent-storybook/components"
 
 
 def _indent(text: str, level: int = 1) -> str:

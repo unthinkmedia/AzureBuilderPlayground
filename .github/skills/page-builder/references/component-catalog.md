@@ -2,9 +2,9 @@
 
 All shared components available for building pages. Always use these before creating custom UI.
 
-## @azure-storybook/components
+## @azure-fluent-storybook/components
 
-These are imported from `@azure-storybook/components` (aliased to `../AzureStorybook/src`).
+These are imported from `@azure-fluent-storybook/components` (npm package — installed via `package.json`). Always call `getComponentsProps` from Storybook MCP to read the latest documentation before using any component.
 
 ### AzureGlobalHeader
 Top-level Azure Portal navigation bar with search, notifications, user avatar.

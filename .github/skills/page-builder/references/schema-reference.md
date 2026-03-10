@@ -114,7 +114,7 @@ Rendered title: `"resourceName | pageName"` (or just `resourceName` if pageName 
 }
 ```
 
-**Note:** The `.tsx` component uses `EssentialsPanel` from `@azure-storybook/components` which has a richer API with `leftItems`, `rightItems`, and `actions`. When hand-building TSX for complex essentials (like the Static Web App page), use the component directly rather than relying on codegen.
+**Note:** The `.tsx` component uses `EssentialsPanel` from `@azure-fluent-storybook/components` which has a richer API with `leftItems`, `rightItems`, and `actions`. When hand-building TSX for complex essentials (like the Static Web App page), use the component directly rather than relying on codegen.
 
 ## CommandBar
 

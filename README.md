@@ -1,6 +1,8 @@
 # Azure Builder Playground
 
-A rapid prototyping environment for building Azure Portal page experiments using React, Fluent UI, and a schema-driven pipeline. Each repo is a **single experiment** — build your main version, then create variations to compare alternatives side by side.
+A rapid prototyping environment for building Azure Portal page experiments using React, Fluent UI, and a shared Azure component library. Each repo is a **single experiment** — describe what you want to Copilot, and it builds the page for you. No coding experience required.
+
+> **Open in VS Code, ask Copilot anything — it handles the rest.**
 
 ---
 
@@ -74,11 +76,11 @@ All servers are already configured in `.vscode/mcp.json` — just click **"Start
 
 ### Step 5: Start prompting!
 
-That's it — just ask Copilot to build something. Everything else is handled automatically:
+That's it — just ask Copilot to build something. **You don't need to run any commands.** On your very first prompt, Copilot automatically:
 
-- **Dependencies** — Copilot runs `npm install` if `node_modules` is missing
-- **Dev server** — Copilot starts `npm run dev` if the Vite server isn't running
-- **Experiment name** — Copilot fills in `experiment.json` based on your first prompt
+- **Installs dependencies** — runs `npm install` to set up the shared Azure component library and all packages
+- **Starts the dev server** — runs `npm run dev` so you can preview your page instantly
+- **Names your experiment** — fills in `experiment.json` based on what you ask for
 
 You can describe what you want in plain text, or give Copilot a visual reference to work from:
 
@@ -113,10 +115,12 @@ Build a page from this Figma design: https://www.figma.com/design/abc123/My-Desi
 
 ---
 
-## Quick Start
+## Quick Start (for manual setup)
+
+If you prefer to set things up yourself instead of letting Copilot handle it:
 
 ```bash
-# Install dependencies
+# Install dependencies (includes the shared Azure component library)
 npm install
 
 # Start the dev server
@@ -127,6 +131,8 @@ npm run build
 ```
 
 The app runs at `http://localhost:5173` and hot-reloads on changes.
+
+> **Note:** If you're using Copilot, you don't need to run these commands — Copilot does it automatically on your first prompt.
 
 ---
 
@@ -393,7 +399,7 @@ What components am I not using from storybook?
 Component check on the overview page
 ```
 
-Detects custom HTML/CSS patterns that duplicate existing `@azure-storybook/components` or Fluent UI components and suggests replacements.
+Detects custom HTML/CSS patterns that duplicate existing `@azure-fluent-storybook/components` or Fluent UI components and suggests replacements.
 
 ### IconCloud Browser
 
@@ -468,11 +474,11 @@ Variations of multi-screen flows can modify any subset of screens, add new scree
 | Technology | Purpose |
 |------------|---------|
 | **React 18** | UI framework |
-| **Fluent UI v9** | Microsoft's design system components |
+| **Fluent UI v9** | Microsoft's design system primitives |
+| **@azure-fluent-storybook/components** | Pre-built Azure Portal components and themes (PageHeader, CommandBar, FilterBar, DataGrid, SideNavigation, etc.) — installed automatically via `npm install` |
 | **Vite** | Build tool & dev server |
 | **TypeScript** | Type safety |
 | **Pydantic** | Schema validation (Python pipeline) |
-| **@azure-storybook** | Shared Azure Portal components (aliased from `../AzureStorybook/src`) |
 
 ---
 
