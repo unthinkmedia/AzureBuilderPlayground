@@ -7,7 +7,7 @@
         "storybook-mcp"
       ],
       "env": {
-        "STORYBOOK_URL": "http://localhost:6006/index.json"
+        "STORYBOOK_URL": "https://gentle-smoke-0409f8010.1.azurestaticapps.net/index.json"
       }
     }
   }

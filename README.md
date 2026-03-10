@@ -1,0 +1,437 @@
+# Azure Builder Playground
+
+A rapid prototyping environment for building Azure Portal page experiments using React, Fluent UI, and a schema-driven pipeline. Each repo is a **single experiment** — build your main version, then create variations to compare alternatives side by side.
+
+---
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+The app runs at `http://localhost:5173` and hot-reloads on changes.
+
+---
+
+## Project Structure
+
+```
+experiment.json                 ← Experiment name & description
+pipeline.py                     ← Schema → Validate → Code CLI
+schemas/                        ← Pydantic models & codegen
+src/
+  main.tsx                      ← React entrypoint
+  shell/
+    App.tsx                     ← Auto-discovers main + variations, renders picker
+  main/
+    index.tsx                   ← Canonical version of the experiment
+    <ScreenName>.tsx            ← Additional screens (multi-screen flows)
+    flow.json                   ← Optional: screen order for flows
+  variations/
+    <variation-name>/
+      meta.json                 ← { "description": "..." }
+      index.tsx                 ← Variation's version
+      <ScreenName>.tsx          ← Additional screens
+      flow.json                 ← Optional: screen order
+.github/skills/                 ← Copilot skills (page-builder, etc.)
+public/azure-icons/             ← Azure service icon SVGs
+```
+
+---
+
+## How Experiments Work
+
+An experiment is a self-contained prototype of an Azure Portal page (or multi-page flow). The shell (`App.tsx`) automatically discovers all versions using Vite's `import.meta.glob` — no manual registration needed.
+
+### experiment.json
+
+The root `experiment.json` defines metadata:
+
+```json
+{
+  "name": "My Experiment",
+  "description": "A playground for rapid prototyping"
+}
+```
+
+### Single-Screen vs Multi-Screen
+
+- **Single-screen:** Only `index.tsx` in the folder.
+- **Multi-screen flow:** Multiple `.tsx` files + a `flow.json` that defines the screen order.
+
+```json
+// flow.json
+["Overview", "Create", "Review"]
+```
+
+Values are filenames without `.tsx`. The shell renders step navigation (tabs) when `flow.json` is present.
+
+---
+
+## Creating an Experiment
+
+### Option 1: Ask Copilot to build a page
+
+Use natural language to describe or provide a screenshot of an Azure Portal page. Copilot uses the **page-builder** skill to generate a validated schema and React component.
+
+**Prompt examples:**
+
+```
+Build me an Azure Virtual Machines overview page
+```
+
+```
+Create a page that looks like the Azure Storage Account browse page with a table of storage accounts
+```
+
+```
+Build a resource group overview page with essentials panel, activity log, and deployments tab
+```
+
+```
+Make a page that shows a Kubernetes cluster overview with node pools, workloads, and monitoring sections
+```
+
+```
+Create an Azure SQL Database create wizard with basics, networking, security, and review steps
+```
+
+```
+Recreate this portal page
+(attach a screenshot)
+```
+
+The page-builder skill will:
+
+1. Analyze your input (screenshot or description)
+2. Determine layout (side panel vs full width)
+3. Choose a content template (`list-table`, `form`, `cards-grid`, `detail`, or `custom`)
+4. Generate a `.schema.json` and `.tsx` component
+5. Register the page in `App.tsx`
+6. Produce a build report listing all components used
+
+### Option 2: Build manually
+
+Create `src/main/index.tsx` with a default-exported React component:
+
+```tsx
+import React from 'react';
+import { makeStyles, tokens, Text } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  root: { padding: '24px' },
+});
+
+const MyPage: React.FC = () => {
+  const styles = useStyles();
+  return (
+    <div className={styles.root}>
+      <Text size={800} weight="semibold">My Page</Text>
+    </div>
+  );
+};
+
+export default MyPage;
+```
+
+### Option 3: Use the schema pipeline
+
+Write a `.schema.json` file conforming to the `PageSchema` model, then run:
+
+```bash
+python pipeline.py src/pages/MyPage.schema.json
+python pipeline.py src/pages/MyPage.schema.json --output src/main/index.tsx
+python pipeline.py src/pages/MyPage.schema.json --validate-only
+```
+
+The schema answers 6 questions:
+
+| # | Question | Values |
+|---|----------|--------|
+| 1 | What container? | `azure` or `sre` |
+| 2 | Side nav? | `SideNavConfig` or `null` |
+| 3 | Page title? | `TitleConfig` with resource name, icon, breadcrumbs |
+| 4 | Breadcrumbs? | Array inside `TitleConfig` |
+| 5 | Body template? | `list-table`, `form`, `cards-grid`, `detail`, `custom` |
+| 6 | Essentials accordion? | `EssentialsConfig` or `null` |
+
+---
+
+## Variations
+
+Variations let you explore alternative designs without touching your main version. The shell auto-discovers them and renders a dropdown picker to switch between versions.
+
+### Creating a Variation
+
+**Prompt examples:**
+
+```
+Make a variation that uses cards instead of a table
+```
+
+```
+Create a variation with a compact toolbar and fewer columns
+```
+
+```
+Try a different version that uses tabs instead of a sidebar
+```
+
+```
+New variant with a dark theme command bar
+```
+
+```
+Make a variation that adds a monitoring dashboard tab
+```
+
+What happens:
+
+1. A kebab-case folder name is derived from your description (e.g., `card-layout`)
+2. All files from `src/main/` are copied to `src/variations/<name>/`
+3. A `meta.json` is created with the variation description
+4. The requested changes are applied to the variation copy
+5. The shell auto-discovers and shows it in the picker — no registration needed
+
+**Rules:**
+- `src/main/` is never modified when creating a variation
+- Each variation is a full standalone copy (no imports from main)
+- Variation names use kebab-case
+- If main has a `flow.json`, it gets copied too
+
+### Deleting a Variation
+
+```
+Delete the card-layout variation
+```
+
+```
+Remove the compact-toolbar variant
+```
+
+You'll be asked to confirm before deletion. The main version cannot be deleted.
+
+### Promoting a Variation to Main
+
+```
+Make card-layout the main version
+```
+
+```
+Promote compact-toolbar to main
+```
+
+```
+Swap main with the dark-toolbar variation
+```
+
+What happens:
+
+1. Current `src/main/` moves to `src/variations/previous-main/`
+2. The promoted variation moves to `src/main/`
+3. `meta.json` is removed from the new main, added to `previous-main`
+
+### Listing Variations
+
+```
+What variations exist?
+```
+
+```
+Show me all the variants
+```
+
+Returns a table of all versions with their descriptions.
+
+---
+
+## Features & Copilot Skills
+
+### Page Builder
+
+Build Azure Portal pages from descriptions or screenshots.
+
+| Prompt | What it does |
+|--------|-------------|
+| `Build a page for Azure App Service overview` | Creates a resource overview with side nav, essentials, tabs |
+| `Create a Storage Accounts browse page` | Full-width page with data table, filters, command bar |
+| `Make a Create VM wizard` | Multi-step form with basics, disks, networking, review |
+| `Build a resource group page with deployments` | Side-panel detail page with sub-pages |
+| `Create a dashboard with KPI cards` | Cards-grid layout with health metrics |
+| `Recreate this portal page` + screenshot | Pixel-faithful reproduction from a screenshot |
+
+### Component Audit
+
+After building a page, check for custom UI that could use shared components.
+
+```
+Audit my page for missing shared components
+```
+
+```
+What components am I not using from storybook?
+```
+
+```
+Component check on the overview page
+```
+
+Detects custom HTML/CSS patterns that duplicate existing `@azure-storybook/components` or Fluent UI components and suggests replacements.
+
+### IconCloud Browser
+
+Browse and download icons from Microsoft's IconCloud repository (Azure Icons, Fluent System Library, Visual Studio Icons, etc.).
+
+```
+Find me an icon for Virtual Machine
+```
+
+```
+Get the Azure icon for Storage Account
+```
+
+```
+Search for networking icons
+```
+
+Opens a visual icon browser to search 10,000+ Microsoft icons across multiple libraries.
+
+### Experiment Helper
+
+Manage variations directly through natural language.
+
+```
+Make a variation that uses a grid layout
+```
+
+```
+Delete the sidebar variation
+```
+
+```
+Promote compact-toolbar to main
+```
+
+```
+What variations exist?
+```
+
+### Skill Creator
+
+Create new Copilot skills for this workspace.
+
+```
+Create a skill that generates mock data for tables
+```
+
+```
+Write a skill for accessibility testing
+```
+
+---
+
+## Multi-Screen Flows
+
+For create wizards, onboarding flows, or any multi-step experience:
+
+1. Create named `.tsx` files for each screen (e.g., `Basics.tsx`, `Networking.tsx`, `Review.tsx`)
+2. Add a `flow.json` with the screen order
+3. The shell renders tab/step navigation automatically
+
+```
+Build me a Create VM wizard with Basics, Disks, Networking, and Review + Create steps
+```
+
+Variations of multi-screen flows can modify any subset of screens, add new screens, remove screens, or reorder `flow.json`.
+
+---
+
+## Technology Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | UI framework |
+| **Fluent UI v9** | Microsoft's design system components |
+| **Vite** | Build tool & dev server |
+| **TypeScript** | Type safety |
+| **Pydantic** | Schema validation (Python pipeline) |
+| **@azure-storybook** | Shared Azure Portal components (aliased from `../AzureStorybook/src`) |
+
+---
+
+## Content Templates
+
+The schema pipeline supports 5 content template types:
+
+| Template | Use Case | Example |
+|----------|----------|---------|
+| `list-table` | Data tables, resource lists, browse pages | Storage Accounts list, VM instances |
+| `form` | Create/edit forms with fields | Create VM wizard steps |
+| `cards-grid` | Dashboard overviews, KPI tiles | Resource group overview, health dashboard |
+| `detail` | Property sheets, overview sections | Resource properties, configuration details |
+| `custom` | Mixed content, tabs + cards + charts | Resource overview "Get started" tab |
+
+---
+
+## Layout Types
+
+| Layout | When to Use | Characteristics |
+|--------|-------------|-----------------|
+| **Side Panel** | Resource overview, sub-pages, detail pages | 220px nav + `CuiSideNav` left of content |
+| **Full Width** | Home, create wizard, marketplace, browse | Content fills the full area |
+
+**Decision rule:** "Am I looking at a specific deployed resource?" → Side Panel. Otherwise → Full Width.
+
+---
+
+## Prompt Cheat Sheet
+
+### Building Pages
+
+```
+Build me an Azure [service] overview page
+Create a [service] browse page with [columns]
+Make a create [resource] wizard with [steps]
+Build a dashboard with [metrics/KPIs]
+Recreate this portal page (+ screenshot)
+Build a [service] detail page with [sections]
+Create a resource list page for [resource type]
+```
+
+### Managing Variations
+
+```
+Make a variation that [change description]
+Create a variation with [feature]
+Try a different version that [approach]
+Delete the [name] variation
+Promote [name] to main
+Make [name] the main version
+What variations exist?
+Show me the variants
+```
+
+### Post-Build
+
+```
+Audit components on this page
+Check for missing shared components
+Find me an icon for [service/concept]
+Run a component check
+```
+
+### Utilities
+
+```
+Create a skill that [capability]
+Dump the schema prompt context
+Validate my schema file
+```
