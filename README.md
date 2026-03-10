@@ -4,6 +4,93 @@ A rapid prototyping environment for building Azure Portal page experiments using
 
 ---
 
+## Getting Your Own Copy
+
+### Option A: Use as a Template (Recommended)
+
+1. Go to [github.com/unthinkmedia/AzureBuilderPlayground](https://github.com/unthinkmedia/AzureBuilderPlayground)
+2. Click the green **"Use this template"** button (top right, next to "Code")
+3. Select **"Create a new repository"**
+4. Choose your GitHub account as the **Owner**
+5. Give it a name (e.g., `my-azure-experiment`)
+6. Choose **Public** or **Private**
+7. Click **"Create repository"**
+8. Clone your new repo locally:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/my-azure-experiment.git
+   cd my-azure-experiment
+   ```
+
+This creates a clean copy with no link back to the original — perfect for starting fresh.
+
+### Option B: Fork the Repo
+
+Use this if you want to stay connected to the upstream repo and pull future updates.
+
+1. Go to [github.com/unthinkmedia/AzureBuilderPlayground](https://github.com/unthinkmedia/AzureBuilderPlayground)
+2. Click **"Fork"** (top right)
+3. Select your GitHub account as the destination
+4. Clone your fork:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/AzureBuilderPlayground.git
+   cd AzureBuilderPlayground
+   ```
+5. To pull future updates from the original:
+   ```bash
+   git remote add upstream https://github.com/unthinkmedia/AzureBuilderPlayground.git
+   git fetch upstream
+   git merge upstream/main
+   ```
+
+### Option C: Manual Copy (No GitHub UI)
+
+Clone the repo, remove the git history, and push to your own account:
+
+```bash
+# Clone the original
+git clone https://github.com/unthinkmedia/AzureBuilderPlayground.git my-experiment
+cd my-experiment
+
+# Remove the original git history
+rm -rf .git
+
+# Initialize a fresh repo
+git init
+git add .
+git commit -m "Initial commit from AzureBuilderPlayground"
+
+# Create a new repo on GitHub (via github.com or GitHub CLI), then push:
+git remote add origin https://github.com/YOUR_USERNAME/my-experiment.git
+git branch -M main
+git push -u origin main
+```
+
+### After Cloning
+
+```bash
+# Install Node dependencies
+npm install
+
+# (Optional) Set up the Python environment for the schema pipeline
+python -m venv .venv
+source .venv/bin/activate   # macOS/Linux
+pip install -e .
+
+# Start developing
+npm run dev
+```
+
+Update `experiment.json` with your experiment's name and description:
+
+```json
+{
+  "name": "My Experiment Name",
+  "description": "What I'm prototyping"
+}
+```
+
+---
+
 ## Quick Start
 
 ```bash
