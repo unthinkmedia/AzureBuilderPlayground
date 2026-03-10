@@ -33,6 +33,13 @@ If you attempt to use Playwright MCP tools and they aren't available, tell the u
 If the user's prompt involves a Figma URL or mentions Figma and the Figma MCP tools aren't available, tell the user:
 > "The Figma MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **figma**. You'll need a Figma API key — get one at figma.com/developers."
 
+### 6. Page Creation Gate
+When the user asks to "make this", "build this", "create a page", or provides a screenshot of a UI to recreate:
+1. **STOP** — do NOT write any `.tsx` file directly.
+2. Read the page-builder skill at `.github/skills/page-builder/SKILL.md`.
+3. Follow its full pipeline: generate `.schema.json` first, validate it, then generate the component.
+4. Skipping the schema step is never acceptable.
+
 ## Workspace Conventions
 
 - Each repo is a single experiment with one `src/main/` and optional `src/variations/`
