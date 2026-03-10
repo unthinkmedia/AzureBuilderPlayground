@@ -27,6 +27,19 @@ Build Azure Portal pages using the Pydantic PageSchema pipeline. This skill take
 
 Follow these steps in order. Do not skip steps.
 
+### Step 0: Query Storybook MCP (MANDATORY — do this FIRST)
+
+Before writing any component code, you MUST consult Storybook MCP:
+
+1. Call `getComponentList` to see all available composed components and templates.
+2. Identify which Storybook components match the page you're building (PageHeader, CommandBar, FilterBar, DataGrid, SideNavigation, Azure Container, Resource List Page template, etc.).
+3. Call `getComponentsProps` for every component you plan to use to understand its API surface.
+4. **Only** drop to raw `@fluentui/react-components` for elements that have no Storybook equivalent.
+5. **NEVER import `@azure-storybook/*` as npm packages** — they are design-time references from Storybook MCP, not published to npm.
+
+If Storybook MCP is not running, STOP and tell the user:
+> "The Storybook MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **storybook**."
+
 ### Step 1: Analyze the Input
 
 Determine what the user wants to build. Input can be:
