@@ -40,6 +40,31 @@ When the user asks to "make this", "build this", "create a page", or provides a 
 3. Follow its full pipeline: generate `.schema.json` first, validate it, then generate the component.
 4. Skipping the schema step is never acceptable.
 
+**WRONG — never do this:**
+```
+User: "Build me a VM overview page"
+Agent: *immediately creates src/main/index.tsx with hand-written JSX*
+```
+```
+User: "Make this" (attaches screenshot)
+Agent: *writes a .tsx file without producing a .schema.json first*
+```
+```
+User: "Create a storage account page"
+Agent: *generates .schema.json but skips validation and jumps straight to .tsx*
+```
+
+**RIGHT — always do this:**
+```
+User: "Build me a VM overview page"
+Agent:
+  1. Reads .github/skills/page-builder/SKILL.md
+  2. Queries Storybook MCP for component APIs
+  3. Creates VmOverview.schema.json
+  4. Runs `python pipeline.py VmOverview.schema.json` to validate
+  5. Generates VmOverview.tsx from the validated schema
+```
+
 ## Workspace Conventions
 
 - Each repo is a single experiment with one `src/main/` and optional `src/variations/`
