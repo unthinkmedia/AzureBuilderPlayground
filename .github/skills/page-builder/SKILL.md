@@ -187,6 +187,21 @@ If none, state: "None — all UI composed from shared components."
 6. Essentials: Yes/No
 ```
 
+### Step 9: Post-Build Review (MANDATORY)
+
+After the build report is complete, run the **page-review** skill to validate quality.
+
+1. Read the page-review skill at `.github/skills/page-review/SKILL.md`.
+2. Execute all three passes against the page you just built:
+   - **Pass 1 — Token Audit:** Scan for hardcoded colors, fonts, spacing, shadows, and border radii.
+   - **Pass 2 — Component Audit:** Verify Storybook components were used where applicable; justify any Fluent fallbacks.
+   - **Pass 3 — Visual Analysis:** Use Playwright to screenshot the rendered page and check layout, icons, alignment, and overall appearance.
+3. Present the prioritized action list (High → Medium → Low) to the user.
+4. **Fix all High-priority items** before considering the page complete.
+5. Medium and Low items should be presented to the user for decision.
+
+Do NOT skip this step. The page is not considered finished until the review passes.
+
 ## Important Rules
 
 - **NEVER recreate shared components.** Before building any custom UI element, check if `@azure-fluent-storybook/components` already provides it. Call `getComponentList` from Storybook MCP to verify. Read `references/component-catalog.md`.

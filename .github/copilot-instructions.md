@@ -63,6 +63,8 @@ Agent:
   3. Creates VmOverview.schema.json
   4. Runs `python pipeline.py VmOverview.schema.json` to validate
   5. Generates VmOverview.tsx from the validated schema
+  6. Runs page-review skill (token audit → component audit → visual analysis)
+  7. Fixes all High-priority findings before presenting to user
 ```
 
 ## Workspace Conventions

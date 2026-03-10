@@ -4,8 +4,10 @@
   ],
   "manualFolders": [
     "component-audit",
+    "deploy-to-hub",
     "experiment-helper",
     "iconcloud-browser",
-    "page-builder"
+    "page-builder",
+    "page-review"
   ]
 }
