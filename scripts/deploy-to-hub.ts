@@ -271,7 +271,7 @@ const registerRes = await fetch(`${HUB_API_URL}/api/deploy`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${AZURE_TOKEN}`,
+    "X-Deploy-Token": AZURE_TOKEN,
   },
   body: JSON.stringify(registerBody),
 });
