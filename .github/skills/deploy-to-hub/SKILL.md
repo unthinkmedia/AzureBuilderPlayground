@@ -10,7 +10,7 @@ description: >
 
 Deploy the current experiment from the Playground sandbox to Azure Builder Hub so it appears in the gallery for other Microsoft employees.
 
-**Zero-config** — the deploy key and Hub URL are in `deploy.config.json` which ships with the template. No `.env` file or secrets setup required.
+**Zero-config** — authenticates via your existing `az login` session. No keys, secrets, or `.env` files needed.
 
 ## When to Use
 
@@ -23,7 +23,7 @@ This skill triggers on any of these user intents:
 
 ## Prerequisites
 
-The only prerequisite is that `deploy.config.json` in the project root has a valid `deployKey`. This ships pre-configured with the template — no action needed from the user.
+The user must be logged in to Azure CLI (`az login`). If they haven't, the deploy script will print clear instructions. No keys or secrets are needed — just a Microsoft account.
 
 ## Step-by-Step Workflow
 
@@ -31,6 +31,7 @@ The only prerequisite is that `deploy.config.json` in the project root has a val
 
 1. Check that `experiment.json` has been updated from default values. If it still says `"My Experiment"` / `"A playground for rapid prototyping"`, infer a name and description from the user's work, then update it.
 2. Run `npm install` if `node_modules/` doesn't exist.
+3. Check `az account show` works. If not, tell the user to run `az login` first.
 
 ### Step 2: Deploy
 
@@ -72,7 +73,7 @@ Example output:
 | Error | Fix |
 |-------|-----|
 | `deploy.config.json not found` | You must be in the project root |
-| `deployKey has not been set` | The template's `deploy.config.json` still has the placeholder. Ask your team lead for the key. |
+| `Not logged in to Azure` | Run `az login` then try again |
 | `experiment.json not found` | You must be in the project root |
-| `Hub registration failed (401)` | The deploy key doesn't match the Hub's key |
+| `Hub registration failed (401)` | Your Azure account may not be in the allowed tenant. Verify with `az account show`. |
 | `Thumbnail generation failed` | Use `--skip-thumbnail` or install Playwright: `npx playwright install chromium` |

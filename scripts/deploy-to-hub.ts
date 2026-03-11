@@ -2,7 +2,7 @@
 /**
  * Deploy the current experiment to Azure Builder Hub.
  *
- * Zero-config: reads deploy.config.json (committed to the template).
+ * Zero-config: uses your existing `az login` session for auth.
  * The Hub API returns a time-limited SAS upload URL, so no storage
  * credentials are needed on the client.
  *
@@ -11,7 +11,7 @@
  *
  * Override config via env vars (optional):
  *   HUB_API_URL   – Override the Hub URL from deploy.config.json
- *   HUB_DEPLOY_KEY – Override the deploy key from deploy.config.json
+ *   AZURE_TOKEN   – Provide a Bearer token directly (for CI)
  */
 
 import { execSync, spawn } from "node:child_process";
@@ -146,17 +146,35 @@ if (!existsSync(configPath)) fatal("deploy.config.json not found. This file ship
 
 const config = JSON.parse(readFileSync(configPath, "utf-8")) as {
   hubApiUrl?: string;
-  deployKey?: string;
 };
 
-// Env vars override config for CI and power-user scenarios
 const HUB_API_URL = process.env.HUB_API_URL || config.hubApiUrl;
-const DEPLOY_KEY = process.env.HUB_DEPLOY_KEY || config.deployKey;
-
 if (!HUB_API_URL) fatal("hubApiUrl missing from deploy.config.json");
-if (!DEPLOY_KEY || DEPLOY_KEY === "REPLACE_WITH_DEPLOY_KEY") {
-  fatal("deployKey in deploy.config.json has not been set. Ask your team lead for the deploy key.");
+
+// ── Get Azure AD token ──
+function getAzureToken(): string {
+  // CI can provide a token directly
+  if (process.env.AZURE_TOKEN) return process.env.AZURE_TOKEN;
+
+  try {
+    const token = execSync(
+      "az account get-access-token --resource https://management.azure.com --query accessToken -o tsv",
+      { encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] },
+    ).trim();
+    if (!token) throw new Error("empty token");
+    return token;
+  } catch {
+    fatal(
+      "Not logged in to Azure. Run:\n\n" +
+      "    az login\n\n" +
+      "  Then try again. No keys or secrets needed — just your Microsoft account.",
+    );
+  }
 }
+
+console.log("\n🔑 Authenticating via Azure AD…");
+const AZURE_TOKEN = getAzureToken();
+console.log("  ✅ Authenticated");
 
 const cliArgs = process.argv.slice(2);
 const skipThumbnail = cliArgs.includes("--skip-thumbnail");
@@ -245,7 +263,6 @@ const registerBody = {
   tags,
   layout,
   pageCount,
-  authorId: `github:${getGitOwner()}`,
   authorName: getGitUser(),
   changelog: `Deployed locally at ${new Date().toISOString()}`,
 };
@@ -254,7 +271,7 @@ const registerRes = await fetch(`${HUB_API_URL}/api/deploy`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    "x-deploy-key": DEPLOY_KEY,
+    "Authorization": `Bearer ${AZURE_TOKEN}`,
   },
   body: JSON.stringify(registerBody),
 });

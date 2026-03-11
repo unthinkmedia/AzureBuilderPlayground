@@ -7,10 +7,12 @@ on:
 
 permissions:
   contents: read
+  id-token: write  # Required for OIDC federated credential
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -44,12 +46,24 @@ jobs:
           PAGE_COUNT=$(find . -name '*.schema.json' -not -path './node_modules/*' | wc -l | tr -d ' ')
           echo "pageCount=${PAGE_COUNT:-1}" >> "$GITHUB_OUTPUT"
 
-          # Read config from deploy.config.json (Hub URL + deploy key ship with the template)
+          # Read Hub URL from deploy.config.json
           HUB_URL=$(jq -r '.hubApiUrl' deploy.config.json)
-          DEPLOY_KEY=$(jq -r '.deployKey' deploy.config.json)
           echo "hubUrl=$HUB_URL" >> "$GITHUB_OUTPUT"
-          echo "::add-mask::$DEPLOY_KEY"
-          echo "deployKey=$DEPLOY_KEY" >> "$GITHUB_OUTPUT"
+
+      # ── Authenticate via Azure OIDC (no secrets stored) ──
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get Azure token
+        id: token
+        run: |
+          TOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
       # ── Register with Hub (returns projectId, version, and SAS upload URL) ──
       - name: Register project with Hub
@@ -57,7 +71,7 @@ jobs:
         run: |
           RESPONSE=$(curl -sf -X POST "${{ steps.meta.outputs.hubUrl }}/api/deploy" \
             -H "Content-Type: application/json" \
-            -H "x-deploy-key: ${{ steps.meta.outputs.deployKey }}" \
+            -H "Authorization: Bearer ${{ steps.token.outputs.token }}" \
             -d @- <<EOF
           {
             "repoOwner": "${{ github.repository_owner }}",
@@ -67,7 +81,6 @@ jobs:
             "tags": ${{ steps.meta.outputs.tags }},
             "layout": "${{ steps.meta.outputs.layout }}",
             "pageCount": ${{ steps.meta.outputs.pageCount }},
-            "authorId": "github:${{ github.repository_owner }}",
             "authorName": "${{ github.actor }}",
             "changelog": "Deployed from commit ${{ github.sha }}"
           }
