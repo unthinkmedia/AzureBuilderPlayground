@@ -32,8 +32,10 @@ jobs:
         run: |
           NAME=$(jq -r '.name // "Untitled"' experiment.json)
           DESC=$(jq -r '.description // ""' experiment.json)
+          TAGS=$(jq -c '.tags // []' experiment.json)
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "description=$DESC" >> "$GITHUB_OUTPUT"
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
 
           TOPICS=$(find . -name '*.schema.json' -not -path './node_modules/*' \
             -exec jq -r '.meta.topics // [] | .[]' {} + 2>/dev/null | sort -u | jq -Rsc 'split("\n") | map(select(length > 0))')
@@ -79,6 +81,7 @@ jobs:
             "experimentName": "${{ steps.meta.outputs.name }}",
             "description": "${{ steps.meta.outputs.description }}",
             "topics": ${{ steps.meta.outputs.topics }},
+            "tags": ${{ steps.meta.outputs.tags }},
             "layout": "${{ steps.meta.outputs.layout }}",
             "pageCount": ${{ steps.meta.outputs.pageCount }},
             "authorName": "${{ github.actor }}",

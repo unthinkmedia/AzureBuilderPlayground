@@ -191,9 +191,11 @@ if (!existsSync(experimentPath)) fatal("experiment.json not found in project roo
 const experiment = JSON.parse(readFileSync(experimentPath, "utf-8")) as {
   name?: string;
   description?: string;
+  tags?: string[];
 };
 const experimentName = experiment.name ?? "Untitled";
 const description = experiment.description ?? "";
+const tags: string[] = Array.isArray(experiment.tags) ? experiment.tags : [];
 
 const topics: string[] = [];
 const schemaFiles = findFiles(process.cwd(), (f) => f.endsWith(".schema.json"));
@@ -272,6 +274,7 @@ const registerBody = {
   experimentName,
   description,
   topics,
+  tags,
   layout,
   pageCount,
   authorName: getGitUser(),

@@ -15,6 +15,27 @@ Check if `experiment.json` still has the default placeholder values (`"My Experi
 - "Build me a VM overview page" → `{ "name": "Virtual Machine Overview", "description": "Azure VM resource overview page prototype" }`
 - "Create a storage account browse page" → `{ "name": "Storage Account Browser", "description": "Browse and manage storage accounts" }`
 
+### 3b. Keeping Experiment Metadata Current
+After **every** build, edit, or significant change to the experiment, update `experiment.json`:
+- **`description`**: Rewrite to accurately reflect the current state of the experiment (not just the initial prompt).
+- **`tags`**: Maintain an array of lowercase, kebab-case tags covering three categories:
+  - **UX patterns** — layout and interaction patterns used (e.g. `"resource-overview"`, `"command-bar"`, `"side-panel-nav"`, `"filter-bar"`, `"create-wizard"`, `"detail-page"`, `"browse-list"`, `"empty-state"`)
+  - **Components** — key Storybook or Fluent components used (e.g. `"data-grid"`, `"page-header"`, `"kpi-card"`, `"tabs"`, `"message-bar"`, `"dialog"`)
+  - **Jobs-to-be-done** — user tasks the experiment addresses (e.g. `"monitor-resources"`, `"manage-vms"`, `"configure-networking"`, `"review-costs"`, `"deploy-app"`)
+- Tags help teammates discover experiments in the community hub. Be generous — include every relevant pattern, component, and job.
+- Example:
+  ```json
+  {
+    "name": "Virtual Machine Overview",
+    "description": "Azure VM resource overview with monitoring KPIs, command bar actions, and properties panel",
+    "tags": [
+      "resource-overview", "side-panel-nav", "command-bar",
+      "kpi-card", "data-grid", "page-header", "tabs",
+      "monitor-resources", "manage-vms", "restart-vm", "view-properties"
+    ]
+  }
+  ```
+
 ### 4. Storybook MCP (Mandatory)
 Storybook MCP is the primary documentation and discovery source for Azure Portal components. Before building any page or UI:
 1. Verify Storybook MCP is running by calling `getComponentList`.

@@ -1,4 +1,5 @@
 {
   "name": "My Experiment",
-  "description": "A playground for rapid prototyping"
+  "description": "A playground for rapid prototyping",
+  "tags": []
 }
