@@ -8,7 +8,6 @@ on:
 permissions:
   contents: read
   id-token: write  # Required for OIDC federated credential
-  metadata: write  # Required to set repo topics
 
 jobs:
   deploy:
@@ -16,23 +15,6 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
-
-      - name: Tag repo with vibe-platform topic
-        run: |
-          # Fetch current topics
-          CURRENT=$(gh api repos/${{ github.repository }}/topics -q '.names | join("\n")' 2>/dev/null || true)
-          if echo "$CURRENT" | grep -q '^vibe-platform$'; then
-            echo "Topic 'vibe-platform' already set"
-          else
-            # Build JSON array of existing topics + vibe-platform
-            TOPICS_JSON=$(echo -e "${CURRENT}\nvibe-platform" | grep -v '^$' | jq -Rsc 'split("\n") | map(select(length > 0))')
-            gh api repos/${{ github.repository }}/topics \
-              -X PUT \
-              --input - <<< "{\"names\": $TOPICS_JSON}"
-            echo "Added 'vibe-platform' topic"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:

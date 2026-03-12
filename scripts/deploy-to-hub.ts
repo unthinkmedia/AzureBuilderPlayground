@@ -15,8 +15,9 @@
  */
 
 import { execSync, spawn } from "node:child_process";
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, copyFileSync } from "node:fs";
 import { join, relative, extname } from "node:path";
+import sharp from "sharp";
 
 // ── Helpers ──
 
@@ -243,8 +244,16 @@ if (!skipThumbnail) {
     const browser = await chromium.launch();
     const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
     await page.goto("http://localhost:4174", { waitUntil: "networkidle" });
-    await page.screenshot({ path: join(distDir, "thumbnail.png") });
+    const fullScreenshotPath = join(distDir, "screenshot.png");
+    await page.screenshot({ path: fullScreenshotPath });
     await browser.close();
+
+    // Resize to card thumbnail (400×210)
+    const thumbnailPath = join(distDir, "thumbnail.png");
+    await sharp(fullScreenshotPath)
+      .resize(400, 210, { fit: "cover" })
+      .png({ quality: 80 })
+      .toFile(thumbnailPath);
 
     try { process.kill(-previewProc.pid!, "SIGTERM"); } catch { /* already exited */ }
 
@@ -290,7 +299,24 @@ const { projectId, version, uploadUrl } = (await registerRes.json()) as {
 };
 console.log(`  ✅ Registered: projectId=${projectId}, version=${version}`);
 
-// ── 5. Upload dist/ via SAS URL ──
+// ── 5. Update experiment.json with previewUrl & thumbnailUrl ──
+const previewUrl = `${HUB_API_URL}/api/projects/${projectId}/preview/`;
+const thumbnailUrl = `${HUB_API_URL}/api/projects/${projectId}/preview/thumbnail.png`;
+
+const updatedExperiment = {
+  ...experiment,
+  previewUrl,
+  thumbnailUrl,
+};
+
+// Write back to source experiment.json
+writeFileSync(experimentPath, JSON.stringify(updatedExperiment, null, 2) + "\n");
+console.log(`  ✅ Updated experiment.json with previewUrl and thumbnailUrl`);
+
+// Copy updated experiment.json into dist/ so it gets uploaded
+copyFileSync(experimentPath, join(distDir, "experiment.json"));
+
+// ── 6. Upload dist/ via SAS URL ──
 console.log("\n☁️  Uploading to Azure Blob Storage…");
 const prefix = `${projectId}/v${version}`;
 const distFiles = findFiles(distDir, () => true);
@@ -311,4 +337,5 @@ console.log(`  ✅ Uploaded ${uploaded} files to experiments/${prefix}/`);
 // ── Done ──
 console.log("\n🎉 Deploy complete!");
 console.log(`   View at: ${HUB_API_URL}/project/${projectId}`);
-console.log(`   Preview: ${HUB_API_URL}/api/projects/${projectId}/preview/\n`);
+console.log(`   Preview: ${previewUrl}`);
+console.log(`   Thumbnail: ${thumbnailUrl}\n`);

@@ -56,10 +56,16 @@ After the script completes, extract the output and tell the user:
 - The Hub URL where they can view it
 - The preview URL
 
+The deploy script automatically:
+- Takes a Playwright screenshot and resizes it to a 400×210 card thumbnail
+- Writes `previewUrl` and `thumbnailUrl` back into `experiment.json`
+- Uploads the updated `experiment.json` and `thumbnail.png` alongside the built files
+
 Example output:
 > "Your experiment has been deployed to Hub as project `abc123` (version 2).
 > View it at: https://victorious-ocean-0ea8ca710.5.azurestaticapps.net/project/abc123
-> Preview: https://victorious-ocean-0ea8ca710.5.azurestaticapps.net/api/projects/abc123/preview/"
+> Preview: https://victorious-ocean-0ea8ca710.5.azurestaticapps.net/api/projects/abc123/preview/
+> Thumbnail: https://victorious-ocean-0ea8ca710.5.azurestaticapps.net/api/projects/abc123/preview/thumbnail.png"
 
 ## Flags
 
