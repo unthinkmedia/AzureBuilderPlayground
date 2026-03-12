@@ -49,6 +49,13 @@ cd YOUR_REPO_NAME
 code-insiders .
 ```
 
+> **Prerequisite — install the `code-insiders` (or `code`) shell command:**
+> If running `code-insiders .` gives you "command not found", you need to install the shell command first:
+> 1. Open **VS Code Insiders** (or VS Code) normally (from your Applications folder / Start Menu)
+> 2. Open the **Command Palette** (`Cmd+Shift+P` on Mac, `Ctrl+Shift+P` on Windows)
+> 3. Type **"Shell Command: Install"** and select **"Shell Command: Install 'code-insiders' command in PATH"** (or **"Install 'code' command in PATH"** for regular VS Code)
+> 4. Restart your Terminal — the command should now work
+
 > **Example:** If your repo URL is `https://github.com/jsmith/my-azure-experiment.git`:
 > ```bash
 > git clone https://github.com/jsmith/my-azure-experiment.git
