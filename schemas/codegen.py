@@ -16,6 +16,11 @@ from schemas.page import (
 COMPONENT_ROOT = "@azure-fluent-storybook/components"
 
 
+def _js_str(value: str) -> str:
+    """Escape single quotes so the value is safe inside a JS '…' string."""
+    return value.replace("\\", "\\\\").replace("'", "\\'")
+
+
 def _indent(text: str, level: int = 1) -> str:
     """Indent each line by `level` × 2 spaces."""
     prefix = "  " * level
@@ -28,16 +33,16 @@ def _nav_items_code(nav) -> str:
     for entry in nav.entries:
         if entry.kind == "group":
             children = ", ".join(
-                f"{{ key: '{i.key}', label: '{i.label}'{f', icon: <AzureServiceIcon name=\"{i.icon.lower()}\" size={{18}} />' if i.icon else ''} }}"
+                f"{{ key: '{_js_str(i.key)}', label: '{_js_str(i.label)}'{f', icon: <AzureServiceIcon name=\"{i.icon.lower()}\" size={{18}} />' if i.icon else ''} }}"
                 for i in entry.items
             )
             lines.append(
-                f"{{ key: '{entry.label.lower().replace(' ', '-')}', label: '{entry.label}', children: [{children}] }}"
+                f"{{ key: '{_js_str(entry.label.lower().replace(' ', '-'))}', label: '{_js_str(entry.label)}', children: [{children}] }}"
             )
         else:
             selected = ", selected: true" if entry.key == nav.default_selected else ""
             icon_part = f", icon: <AzureServiceIcon name=\"{entry.icon.lower()}\" size={{18}} />" if entry.icon else ""
-            lines.append(f"{{ key: '{entry.key}', label: '{entry.label}'{icon_part}{selected} }}")
+            lines.append(f"{{ key: '{_js_str(entry.key)}', label: '{_js_str(entry.label)}'{icon_part}{selected} }}")
     return "[\n" + ",\n".join(f"    {l}" for l in lines) + ",\n  ]"
 
 
@@ -53,7 +58,7 @@ def _command_bar_code(cmd_bar) -> str:
             label = overrides.get("label", overrides.get("text", "Action"))
             icon = overrides.get("icon", "")
             icon_part = f", icon: <{icon}20Regular />" if icon else ""
-            groups[-1].append(f"{{ key: '{ref.instance_id}', label: '{label}'{icon_part} }}")
+            groups[-1].append(f"{{ key: '{_js_str(ref.instance_id)}', label: '{_js_str(label)}'{icon_part} }}")
 
     group_strs = []
     for g in groups:
@@ -78,7 +83,7 @@ def _essentials_code(ess) -> str:
     """Generate EssentialsPanel props from EssentialsConfig."""
     items = []
     for f in ess.fields:
-        parts = [f"label: '{f.label}'", f"value: '{f.value}'"]
+        parts = [f"label: '{_js_str(f.label)}'", f"value: '{_js_str(f.value)}'"]
         if f.link:
             parts.append("isLink: true")
         items.append("{ " + ", ".join(parts) + " }")
@@ -99,8 +104,8 @@ def _table_columns_code(tpl: ListTableTemplate) -> str:
 
         cols.append(
             f"createTableColumn({{\n"
-            f"      columnId: '{col.key}',\n"
-            f"      renderHeaderCell: () => '{col.header}',\n"
+            f"      columnId: '{_js_str(col.key)}',\n"
+            f"      renderHeaderCell: () => '{_js_str(col.header)}',\n"
             f"      renderCell: {render},\n"
             f"    }})"
         )
@@ -247,7 +252,7 @@ def generate_page(page: PageSchema, component_name: str = "GeneratedPage") -> st
     # Breadcrumb → header
     if page.title and page.title.breadcrumbs:
         crumbs = ", ".join(
-            f"{{ label: '{b}'{', current: true' if i == len(page.title.breadcrumbs) - 1 else ''} }}"
+            f"{{ label: '{_js_str(b)}'{', current: true' if i == len(page.title.breadcrumbs) - 1 else ''} }}"
             for i, b in enumerate(page.title.breadcrumbs)
         )
         header_lines.append(f"<AzureBreadcrumb items={{[{crumbs}]}} />")

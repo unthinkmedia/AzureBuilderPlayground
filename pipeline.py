@@ -28,7 +28,7 @@ from schemas.page import PageSchema
 from schemas.json_schema import get_json_schema_str
 from schemas.loader import fetch_story_index
 from schemas.catalog_summary import build_catalog_summary
-from schemas.validator import validate_page
+from schemas.validator import validate_page, validate_icons
 from schemas.codegen import generate_page
 
 
@@ -75,13 +75,26 @@ def run_from_json(
         print("\n🔍 Validating StoryRefs...")
         errors = validate_page(page, index)
         if errors:
-            print(f"   ⚠ {len(errors)} invalid StoryRef(s):")
+            print(f"   ⚠ {len(errors)} validation issue(s):")
             for e in errors:
                 print(f"     {e}")
         else:
             print("   ✓ All StoryRefs valid")
     except Exception as e:
-        print(f"   ⚠ Storybook not reachable ({e}), skipping validation")
+        print(f"   ⚠ Storybook not reachable ({e}), skipping StoryRef validation")
+
+    # ── Step 2b: Validate icon imports (runs independently of Storybook) ──
+    print("\n🎨 Validating icon imports...")
+    icon_errors = validate_icons(page)
+    if icon_errors:
+        print(f"   ⚠ {len(icon_errors)} invalid icon(s):")
+        for e in icon_errors:
+            print(f"     {e}")
+        if not validate_only:
+            print("\n❌ Fix invalid icon names before generating code.")
+            sys.exit(1)
+    else:
+        print("   ✓ All icon imports valid")
 
     if validate_only:
         print("\n✓ Validation complete (--validate-only)")

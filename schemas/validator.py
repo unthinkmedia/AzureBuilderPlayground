@@ -17,7 +17,11 @@ Usage:
 
 from __future__ import annotations
 
+import json
+import subprocess
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 
 from schemas.loader import StoryIndex
 from schemas.page import (
@@ -49,6 +53,70 @@ def _check_ref(ref: StoryRef, location: str, index: StoryIndex) -> list[Validati
             message="story not found in Storybook index",
         )]
     return []
+
+
+@lru_cache(maxsize=1)
+def _load_valid_icons() -> set[str] | None:
+    """Load the set of exported icon names from @fluentui/react-icons.
+
+    Returns None if the package is not installed or node is unavailable.
+    """
+    try:
+        result = subprocess.run(
+            [
+                "node", "-e",
+                "console.log(JSON.stringify("
+                "Object.keys(require('@fluentui/react-icons'))"
+                ".filter(k => /^[A-Z].*\\d+/.test(k))"
+                "))",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if result.returncode == 0:
+            return set(json.loads(result.stdout.strip()))
+    except (FileNotFoundError, subprocess.TimeoutExpired, json.JSONDecodeError):
+        pass
+    return None
+
+
+def _collect_icon_names(page: PageSchema) -> list[tuple[str, str, str]]:
+    """Collect (icon_component_name, location, instance_id) from the page.
+
+    Icon names in argOverrides are stored as base names (e.g. "ArrowSync")
+    and codegen maps them to "{base}20Regular".
+    """
+    results: list[tuple[str, str, str]] = []
+    if page.command_bar:
+        for i, item in enumerate(page.command_bar.items):
+            if item.story:
+                icon = item.story.arg_overrides.get("icon", "")
+                if icon:
+                    results.append((
+                        f"{icon}20Regular",
+                        f"commandBar.items[{i}]",
+                        item.story.instance_id,
+                    ))
+    return results
+
+
+def validate_icons(page: PageSchema) -> list[ValidationError]:
+    """Validate that icon names in argOverrides exist in @fluentui/react-icons."""
+    valid_icons = _load_valid_icons()
+    if valid_icons is None:
+        return []  # Can't validate without the package
+
+    errors: list[ValidationError] = []
+    for icon_name, location, instance_id in _collect_icon_names(page):
+        if icon_name not in valid_icons:
+            errors.append(ValidationError(
+                instance_id=instance_id,
+                story_id="",
+                location=location,
+                message=f"icon '{icon_name}' not found in @fluentui/react-icons",
+            ))
+    return errors
 
 
 def validate_page(page: PageSchema, index: StoryIndex) -> list[ValidationError]:
@@ -85,5 +153,8 @@ def validate_page(page: PageSchema, index: StoryIndex) -> list[ValidationError]:
     elif isinstance(tpl, CustomTemplate):
         for i, ref in enumerate(tpl.stories):
             errors.extend(_check_ref(ref, f"template.stories[{i}]", index))
+
+    # -- Icon validation --
+    errors.extend(validate_icons(page))
 
     return errors
