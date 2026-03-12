@@ -7,6 +7,9 @@ Before doing any work on the user's first prompt, run these checks silently and 
 ### 1. Dependencies
 Check if `node_modules/` exists. If not, run `npm install` automatically.
 
+### 1b. Playwright Chromium
+Check if Playwright's Chromium browser is installed by running `npx playwright install --dry-run chromium 2>&1`. If the output indicates Chromium is not installed (or the command fails), run `npx playwright install chromium` automatically to install it. This is required for visual verification, screenshots, and any browser automation tasks.
+
 ### 2. Dev Server
 Check if the Vite dev server is running (port 5173). If not, start it with `npm run dev` in a background terminal.
 

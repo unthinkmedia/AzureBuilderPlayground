@@ -180,7 +180,8 @@ The root `experiment.json` defines metadata:
 ```json
 {
   "name": "My Experiment",
-  "description": "A playground for rapid prototyping"
+  "description": "A playground for rapid prototyping",
+  "tags": []
 }
 ```
 
@@ -237,8 +238,9 @@ The page-builder skill will:
 2. Determine layout (side panel vs full width)
 3. Choose a content template (`list-table`, `form`, `cards-grid`, `detail`, or `custom`)
 4. Generate a `.schema.json` and `.tsx` component
-5. Register the page in `App.tsx`
-6. Produce a build report listing all components used
+5. Produce a build report listing all components used
+
+The shell (`App.tsx`) auto-discovers new pages — no manual registration needed.
 
 ### Option 2: Build manually
 
@@ -269,9 +271,9 @@ export default MyPage;
 Write a `.schema.json` file conforming to the `PageSchema` model, then run:
 
 ```bash
-python pipeline.py src/pages/MyPage.schema.json
-python pipeline.py src/pages/MyPage.schema.json --output src/main/index.tsx
-python pipeline.py src/pages/MyPage.schema.json --validate-only
+python pipeline.py MyPage.schema.json
+python pipeline.py MyPage.schema.json --output src/main/index.tsx
+python pipeline.py MyPage.schema.json --validate-only
 ```
 
 The schema answers 6 questions:
@@ -507,7 +509,7 @@ The schema pipeline supports 5 content template types:
 
 | Layout | When to Use | Characteristics |
 |--------|-------------|-----------------|
-| **Side Panel** | Resource overview, sub-pages, detail pages | 220px nav + `CuiSideNav` left of content |
+| **Side Panel** | Resource overview, sub-pages, detail pages | 220px nav + `SideNavigation` left of content |
 | **Full Width** | Home, create wizard, marketplace, browse | Content fills the full area |
 
 **Decision rule:** "Am I looking at a specific deployed resource?" → Side Panel. Otherwise → Full Width.
