@@ -121,7 +121,9 @@ async function uploadBlob(
 ): Promise<void> {
   // SAS URL format: https://account.blob.core.windows.net/container?sasToken
   // We insert the blob path between the container and the query string
-  const [baseUrl, queryString] = sasUrl.split("?");
+  const qIndex = sasUrl.indexOf("?");
+  const baseUrl = sasUrl.substring(0, qIndex).replace(/\/+$/, "");
+  const queryString = sasUrl.substring(qIndex + 1);
   const blobUrl = `${baseUrl}/${blobPath}?${queryString}`;
 
   const res = await fetch(blobUrl, {
