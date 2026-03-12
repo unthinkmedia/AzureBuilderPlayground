@@ -60,12 +60,15 @@ User: "Build me a VM overview page"
 Agent:
   1. Reads .github/skills/page-builder/SKILL.md
   2. Queries Storybook MCP for component APIs
-  3. Creates VmOverview.schema.json
-  4. Runs `python pipeline.py VmOverview.schema.json` to validate
-  5. Generates VmOverview.tsx from the validated schema
-  6. Runs page-review skill (token audit → component audit → visual analysis)
-  7. Fixes all High-priority findings before presenting to user
+  3. Reads references/fluent-icon-reference.md for verified icon names
+  4. Creates VmOverview.schema.json (using only verified icon names)
+  5. Runs `python pipeline.py VmOverview.schema.json --validate-only` (catches bad icons)
+  6. Generates VmOverview.tsx from the validated schema
+  7. Runs page-review skill (token audit → component audit → visual analysis)
+  8. Fixes all High-priority findings before presenting to user
 ```
+
+**Icon naming:** Fluent icons use compound names — never invent simple names like `Preview`, `Feedback`, `Refresh`. Always consult `.github/skills/page-builder/references/fluent-icon-reference.md`.
 
 ## Workspace Conventions
 

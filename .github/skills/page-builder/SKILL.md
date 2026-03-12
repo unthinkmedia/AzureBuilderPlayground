@@ -84,6 +84,7 @@ If the page doesn't fit any standard template (e.g., it has tabs, cards, illustr
 Create `src/pages/<PageName>.schema.json` conforming to the `PageSchema` Pydantic model.
 
 Read `references/schema-reference.md` for the full schema structure and field descriptions.
+Read `references/fluent-icon-reference.md` for verified Fluent icon names — **never guess icon names**.
 
 The schema answers 6 questions:
 1. **Container** — `"azure"` or `"sre"`
@@ -105,10 +106,30 @@ For command bar items, use these StoryRef patterns:
 }
 ```
 
+**CRITICAL — Fluent Icon Name Validation:**
+The `icon` value in `argOverrides` is appended with `20Regular` to form a `@fluentui/react-icons` import (e.g., `"ArrowSync"` → `ArrowSync20Regular`). Fluent icons use **compound names** — simple English words almost never work. Before writing any icon name:
+
+1. **Consult** `references/fluent-icon-reference.md` for verified icon names and common mistakes
+2. **Never invent** names that seem logical — e.g., `Preview`, `Feedback`, `Refresh`, `Close`, `Monitor`, `Deploy`, `Dashboard`, `Activity`, `Endpoint`, `Tags` do NOT exist
+3. **Use verified alternatives** — e.g., `PreviewLink` (not `Preview`), `PersonFeedback` (not `Feedback`), `ArrowSync` (not `Refresh`), `Dismiss` (not `Close`)
+4. The pipeline validates icons against the installed package and **blocks codegen** if any are invalid
+    "instanceId": "<unique-id>",
+    "argOverrides": { "label": "Button Text", "icon": "IconName" }
+  },
+  "isSeparator": false
+}
+```
+
 ### Step 5: Generate or Hand-Build the TSX
 
 **For standard templates** (`list-table`, `form`, `cards-grid`, `detail`):
-Run the pipeline to generate the TSX:
+First validate the schema (this catches invalid icon names and bad StoryRefs):
+```bash
+python pipeline.py src/pages/<PageName>.schema.json --validate-only
+```
+If icon validation fails, fix the icon names in the schema using the corrections in `references/fluent-icon-reference.md`, then re-validate.
+
+Once validation passes, generate the TSX:
 ```bash
 python pipeline.py src/pages/<PageName>.schema.json
 ```
@@ -164,8 +185,8 @@ List every component from `@fluentui/react-components`:
 - (etc.)
 
 ### Fluent Icons Used
-- `Delete20Regular`
-- (etc.)
+- `ArrowSync20Regular` — Refresh action (verified in @fluentui/react-icons)
+- (etc. — all icon names must be verified, never invented)
 
 ### Custom Components Created
 List any UI elements you built from scratch that don't exist in the shared library:

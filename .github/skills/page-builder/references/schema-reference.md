@@ -143,6 +143,14 @@ Rendered title: `"resourceName | pageName"` (or just `resourceName` if pageName 
 
 **Icon mapping:** The `icon` in `argOverrides` maps to `@fluentui/react-icons` as `{Icon}20Regular` (e.g., `"ArrowSync"` → `ArrowSync20Regular`).
 
+**CRITICAL — Icon names must be real:** Fluent icons use compound names. Simple English words like `Preview`, `Feedback`, `Refresh`, `Close`, `Monitor`, `Deploy`, `Dashboard` do NOT exist as icon names. Always consult `references/fluent-icon-reference.md` for verified names. The pipeline validates icons against the installed package and **blocks codegen** if any are invalid. Common corrections:
+- `Preview` → `PreviewLink`
+- `Feedback` → `PersonFeedback`
+- `Refresh` → `ArrowSync`
+- `Close` → `Dismiss`
+- `Help` → `QuestionCircle`
+- `Lock` → `LockClosed`
+
 ## Content Templates
 
 ### list-table

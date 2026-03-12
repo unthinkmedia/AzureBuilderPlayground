@@ -99,6 +99,7 @@ Verify that Storybook shared components from `@azure-fluent-storybook/components
    - What was used (the custom/Fluent element)
    - What should have been used (the Storybook component)
    - Whether there's a valid justification (customization not possible with Storybook component, component doesn't support needed variant, etc.)
+6. **Validate Fluent icon imports** — check that every icon imported from `@fluentui/react-icons` actually exists. Fluent icons use compound names (e.g., `PreviewLink20Regular`, not `Preview20Regular`). If a `.schema.json` exists, run `python pipeline.py <schema> --validate-only` to catch bad icon names. Cross-reference against `.github/skills/page-builder/references/fluent-icon-reference.md`.
 
 #### Valid justifications for NOT using a Storybook component
 
