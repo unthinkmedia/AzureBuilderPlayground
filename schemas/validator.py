@@ -119,6 +119,73 @@ def validate_icons(page: PageSchema) -> list[ValidationError]:
     return errors
 
 
+def _load_azure_icon_names() -> set[str]:
+    """Load available Azure service icon names from public/azure-icons/.
+
+    Returns a set of icon names (without extension), e.g. {"cosmosdb", "monitor"}.
+    """
+    icons_dir = Path(__file__).resolve().parent.parent / "public" / "azure-icons"
+    if not icons_dir.is_dir():
+        return set()
+    return {p.stem for p in icons_dir.glob("*.svg")}
+
+
+def _collect_azure_icon_names(page: PageSchema) -> list[tuple[str, str, str]]:
+    """Collect (icon_name_lowered, location, label) for AzureServiceIcon usages.
+
+    Codegen lowercases the icon field and renders <AzureServiceIcon name="..." />.
+    Sources: title.icon and sideNav entry icons.
+    """
+    results: list[tuple[str, str, str]] = []
+
+    if page.title and page.title.icon:
+        results.append((
+            page.title.icon.lower(),
+            "title.icon",
+            page.title.resource_name,
+        ))
+
+    if page.side_nav:
+        for i, entry in enumerate(page.side_nav.entries):
+            if entry.kind == "item" and entry.icon:
+                results.append((
+                    entry.icon.lower(),
+                    f"sideNav.entries[{i}]",
+                    entry.label,
+                ))
+            elif entry.kind == "group":
+                for j, item in enumerate(entry.items):
+                    if item.icon:
+                        results.append((
+                            item.icon.lower(),
+                            f"sideNav.entries[{i}].items[{j}]",
+                            item.label,
+                        ))
+
+    return results
+
+
+def validate_azure_icons(page: PageSchema) -> list[ValidationError]:
+    """Validate that Azure service icon names map to actual SVGs in public/azure-icons/."""
+    available = _load_azure_icon_names()
+    if not available:
+        return []  # Can't validate without the icons directory
+
+    errors: list[ValidationError] = []
+    for icon_name, location, label in _collect_azure_icon_names(page):
+        if icon_name not in available:
+            errors.append(ValidationError(
+                instance_id=label,
+                story_id="",
+                location=location,
+                message=(
+                    f"Azure service icon '{icon_name}' not found in public/azure-icons/. "
+                    f"Available icons: {', '.join(sorted(available))}"
+                ),
+            ))
+    return errors
+
+
 def validate_page(page: PageSchema, index: StoryIndex) -> list[ValidationError]:
     """
     Validate every StoryRef in a PageSchema against a StoryIndex.
@@ -154,7 +221,10 @@ def validate_page(page: PageSchema, index: StoryIndex) -> list[ValidationError]:
         for i, ref in enumerate(tpl.stories):
             errors.extend(_check_ref(ref, f"template.stories[{i}]", index))
 
-    # -- Icon validation --
+    # -- Fluent icon validation --
     errors.extend(validate_icons(page))
+
+    # -- Azure service icon validation --
+    errors.extend(validate_azure_icons(page))
 
     return errors

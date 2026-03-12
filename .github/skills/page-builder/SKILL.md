@@ -123,11 +123,17 @@ The `icon` value in `argOverrides` is appended with `20Regular` to form a `@flue
 ### Step 5: Generate or Hand-Build the TSX
 
 **For standard templates** (`list-table`, `form`, `cards-grid`, `detail`):
-First validate the schema (this catches invalid icon names and bad StoryRefs):
+First validate the schema (this catches invalid Fluent icon names **and** missing Azure service icons in `public/azure-icons/`):
 ```bash
 python pipeline.py src/pages/<PageName>.schema.json --validate-only
 ```
-If icon validation fails, fix the icon names in the schema using the corrections in `references/fluent-icon-reference.md`, then re-validate.
+If Fluent icon validation fails, fix the icon names in the schema using the corrections in `references/fluent-icon-reference.md`, then re-validate.
+
+If Azure service icon validation fails (icon name not found in `public/azure-icons/`):
+1. **Invoke the `iconcloud-browser` skill** to search IconCloud.design for the missing icon name
+2. Download the SVG and save it to `public/azure-icons/<name>.svg` (lowercase, kebab-case)
+3. Re-run `--validate-only` to confirm the icon now resolves
+4. **Never skip** a missing Azure icon — it produces a broken `<img>` in the rendered page
 
 Once validation passes, generate the TSX:
 ```bash

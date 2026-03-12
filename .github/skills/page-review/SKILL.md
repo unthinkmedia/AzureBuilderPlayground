@@ -100,6 +100,10 @@ Verify that Storybook shared components from `@azure-fluent-storybook/components
    - What should have been used (the Storybook component)
    - Whether there's a valid justification (customization not possible with Storybook component, component doesn't support needed variant, etc.)
 6. **Validate Fluent icon imports** — check that every icon imported from `@fluentui/react-icons` actually exists. Fluent icons use compound names (e.g., `PreviewLink20Regular`, not `Preview20Regular`). If a `.schema.json` exists, run `python pipeline.py <schema> --validate-only` to catch bad icon names. Cross-reference against `.github/skills/page-builder/references/fluent-icon-reference.md`.
+7. **Validate Azure service icons** — scan the `.tsx` file for every `<AzureServiceIcon name="..." />` usage and verify the `name` value has a matching `.svg` file in `public/azure-icons/`. Also scan for any `<img>` tags with `src` paths pointing to `azure-icons/` and verify those files exist. If a `.schema.json` exists, `python pipeline.py <schema> --validate-only` now also checks Azure icon names automatically. For each missing Azure icon:
+   - **Flag as High priority** — a missing icon renders as a broken image
+   - **Recovery:** Invoke the `iconcloud-browser` skill to search IconCloud.design for the missing icon name, download the SVG, and save it to `public/azure-icons/<name>.svg`
+   - After downloading, re-run validation to confirm the icon now resolves
 
 #### Valid justifications for NOT using a Storybook component
 
@@ -138,6 +142,7 @@ If Playwright is unavailable, skip this pass and note it in the report as "Pass 
 | **Layout** | Does the page fill the viewport correctly? Is the side nav (if expected) visible and properly sized? Is content clipped or overflowing? Are there unexpected scrollbars? |
 | **Spacing** | Are elements visually evenly spaced? Are there areas where content is too cramped or too far apart? Do sections have consistent padding? |
 | **Icons** | Are all icons rendering (no broken image placeholders, no empty squares)? Are icon sizes consistent? Do icons match their intended meaning? |
+| **Broken images** | Use Playwright to check for broken `<img>` elements: run `document.querySelectorAll('img')` and check each image's `naturalWidth === 0` or `complete === false`. Any broken image is a **High priority** finding. If the broken image src contains `azure-icons/`, invoke the `iconcloud-browser` skill to download the missing SVG from IconCloud.design and save it to `public/azure-icons/`. |
 | **Typography** | Is text readable? Are headings visually distinct from body text? Are there inconsistent font sizes in similar elements? |
 | **Colors** | Does the page use a consistent color palette? Are there jarring color mismatches? Does it look like a standard Azure Portal page? |
 | **Command bar** | Is it present if expected? Are buttons aligned and properly spaced? |
