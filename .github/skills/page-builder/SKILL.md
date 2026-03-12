@@ -41,6 +41,17 @@ Before writing any component code, you MUST consult Storybook MCP to understand 
 If Storybook MCP is not running, STOP and tell the user:
 > "The Storybook MCP server isn't running. Open the Command Palette (`Cmd+Shift+P`), type **MCP: List Servers**, and click **Start** next to **storybook**."
 
+### Step 0.5: Determine the Container (MANDATORY)
+
+Before any other analysis, determine which Container the page needs:
+
+1. **Azure Container** — Default for all Azure Portal pages. Uses `AzureGlobalHeader` + `azureLightTheme`.
+2. **SRE Container** — For SRE Portal pages. Uses `SREGlobalHeader`.
+
+Call `getComponentsProps` for the relevant container (`Container/Azure Container` or `Container/SRE Container`) in Storybook to verify you have the latest pattern. The container determines the page shell structure — header, theme, and layout scaffold.
+
+**If unsure, default to Azure Container.** Only use SRE Container when the user explicitly requests an SRE page or the screenshot clearly shows the SRE header.
+
 ### Step 1: Analyze the Input
 
 Determine what the user wants to build. Input can be:
@@ -49,13 +60,13 @@ Determine what the user wants to build. Input can be:
 - A **reference to an existing page** they want to replicate or modify
 
 Extract these details from the input:
+- **Container type (azure or sre)** — determined in Step 0.5
 - Page name and resource type
 - Whether it has a side navigation panel (resource pages do, browse/create pages don't)
 - What's in the command bar (action buttons)
 - Whether there's an Essentials accordion (resource overview pages)
 - What the main content area shows (table, form, cards, detail sections, or custom)
 - Breadcrumb trail
-- Container type (azure or sre)
 
 ### Step 2: Determine the Layout
 
@@ -230,6 +241,15 @@ After the build report is complete, run the **page-review** skill to validate qu
 Do NOT skip this step. The page is not considered finished until the review passes.
 
 ## Important Rules
+
+- **EVERY page MUST use a Container pattern.** Every generated page must be wrapped in a Storybook Container — either `Azure Container` or `SRE Container`. The Container pattern means:
+  1. The outermost page `<div>` uses `display: flex; flexDirection: column; height: 100vh; backgroundColor: tokens.colorNeutralBackground1`
+  2. The **first child** is always `<AzureGlobalHeader />` (for Azure) or `<SREGlobalHeader />` (for SRE) — never omit the global header
+  3. The `FluentProvider` with the correct theme (`azureLightTheme` for Azure, `azureDarkTheme` for dark mode) wraps the app in `src/main.tsx`
+  4. Before writing ANY page, call `getComponentsProps` for `Container/Azure Container` or `Container/SRE Container` in Storybook to verify you're following the latest pattern
+  5. The `container` field in the schema is **required** — the pipeline will reject schemas without it
+  6. For hand-built (custom template) pages, manually verify the Container pattern is present — the codegen handles this automatically for standard templates, but custom pages must follow the same structure
+  - **Containers available in Storybook:** `Container/Azure Container`, `Container/SRE Container` — always consult these before building
 
 - **NEVER recreate shared components.** Before building any custom UI element, check if `@azure-fluent-storybook/components` already provides it. Call `getComponentList` from Storybook MCP to verify. Read `references/component-catalog.md`.
 - **NEVER hardcode colors or fonts.** Always use Fluent `tokens.*` values.

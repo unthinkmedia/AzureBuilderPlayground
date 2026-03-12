@@ -74,6 +74,7 @@ Agent:
 
 - Each repo is a single experiment with one `src/main/` and optional `src/variations/`
 - The shell (`src/shell/App.tsx`) auto-discovers all versions via `import.meta.glob` — never manually register pages
+- **Container-first**: Every page MUST be wrapped in a Storybook Container (`Container/Azure Container` or `Container/SRE Container`). Before building any page, call `getComponentsProps` for the relevant container to verify the pattern. The Container ensures the page has the correct global header (`AzureGlobalHeader` or `SREGlobalHeader`) as its first child, proper theme, and layout scaffold. **Never build a page without a Container.**
 - **Storybook-first**: Before writing any component code, call `getComponentList` and `getComponentsProps` from Storybook MCP. **Read the Storybook docs for each component** to understand its API, variants, best practices, and gotchas — then import the component from `@azure-fluent-storybook/components`. Use composed/template components (PageHeader, CommandBar, FilterBar, DataGrid, SideNavigation, Azure Container, Resource List Page, etc.) instead of building from raw Fluent primitives. Only drop to raw `@fluentui/react-components` for elements that have no Storybook equivalent.
 - **Component imports**: `@azure-fluent-storybook/components` for shared Azure Portal components **and** themes — this is a real npm package installed via `package.json`
 - Use `@fluentui/react-components` for UI primitives and `makeStyles` + `tokens` for styling

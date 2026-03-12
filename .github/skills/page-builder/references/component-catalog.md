@@ -2,6 +2,34 @@
 
 All shared components available for building pages. Always use these before creating custom UI.
 
+## Container Pattern (MANDATORY)
+
+**Every page MUST live inside a Container.** The Container section in Storybook (`Container/Azure Container`, `Container/SRE Container`) defines the canonical page shell. Always consult the Storybook Container docs before building any page.
+
+### Azure Container
+The standard Azure Portal page shell. Provides the correct theme, global header, and page structure.
+```tsx
+// Structure every Azure page must follow:
+<div className={styles.page}>           {/* height: 100vh, flex column */}
+  <AzureGlobalHeader />                 {/* ALWAYS first child */}
+  {/* ... breadcrumb, page header, content below ... */}
+</div>
+```
+The `FluentProvider` with `azureLightTheme` wraps the app at the root level (`src/main.tsx`).
+
+### SRE Container
+The SRE Portal page shell. Same structure, different header.
+```tsx
+<div className={styles.page}>
+  <SREGlobalHeader />                   {/* ALWAYS first child */}
+  {/* ... content below ... */}
+</div>
+```
+
+**Decision rule:** The schema's `container` field (`"azure"` or `"sre"`) determines which Container pattern to use. This field is required — never omit it.
+
+---
+
 ## @azure-fluent-storybook/components
 
 These are imported from `@azure-fluent-storybook/components` (npm package — installed via `package.json`). Always call `getComponentsProps` from Storybook MCP to read the latest documentation before using any component.

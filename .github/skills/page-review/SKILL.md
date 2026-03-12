@@ -79,7 +79,12 @@ Verify that Storybook shared components from `@azure-fluent-storybook/components
 
 #### Procedure
 
-1. **Load the Storybook component registry** — call `getComponentList` from Storybook MCP to get the current list of all available shared components.
+1. **Check Container pattern (MANDATORY)** — Before any other checks, verify the page uses a proper Container:
+   - The page must import either `AzureGlobalHeader` or `SREGlobalHeader` from `@azure-fluent-storybook/components`
+   - The global header must be the **first child** inside the outermost page `<div>`
+   - If neither header is present → flag as **High priority: Missing Container — page must be wrapped in Azure Container or SRE Container pattern**
+   - If a `.schema.json` exists, verify the `container` field is present and set to `"azure"` or `"sre"`
+2. **Load the Storybook component registry** — call `getComponentList` from Storybook MCP to get the current list of all available shared components.
 2. **Read the target `.tsx` file** and extract:
    - All imports from `@azure-fluent-storybook/components` (what IS being used)
    - All imports from `@fluentui/react-components` (potential missed opportunities)
