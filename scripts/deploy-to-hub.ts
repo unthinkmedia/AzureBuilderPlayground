@@ -192,15 +192,15 @@ const experiment = JSON.parse(readFileSync(experimentPath, "utf-8")) as {
 const experimentName = experiment.name ?? "Untitled";
 const description = experiment.description ?? "";
 
-const tags: string[] = [];
+const topics: string[] = [];
 const schemaFiles = findFiles(process.cwd(), (f) => f.endsWith(".schema.json"));
 let layout = "full-width";
 for (const sf of schemaFiles) {
   try {
     const schema = JSON.parse(readFileSync(sf, "utf-8"));
-    if (schema?.meta?.tags) {
-      for (const t of schema.meta.tags) {
-        if (typeof t === "string" && !tags.includes(t)) tags.push(t);
+    if (schema?.meta?.topics) {
+      for (const t of schema.meta.topics) {
+        if (typeof t === "string" && !topics.includes(t)) topics.push(t);
       }
     }
     if (schema?.meta?.layout) layout = schema.meta.layout;
@@ -211,7 +211,7 @@ for (const sf of schemaFiles) {
 const pageCount = Math.max(schemaFiles.length, 1);
 
 console.log(`  Name: ${experimentName}`);
-console.log(`  Tags: ${tags.length ? tags.join(", ") : "(none)"}`);
+console.log(`  Topics: ${topics.length ? topics.join(", ") : "(none)"}`);
 console.log(`  Layout: ${layout}`);
 console.log(`  Pages: ${pageCount}`);
 
@@ -260,7 +260,7 @@ const registerBody = {
   repoName: getGitRepoName(),
   experimentName,
   description,
-  tags,
+  topics,
   layout,
   pageCount,
   authorName: getGitUser(),

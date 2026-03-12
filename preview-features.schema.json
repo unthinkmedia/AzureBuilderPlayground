@@ -3,7 +3,7 @@
     "title": "Preview features",
     "description": "Default Directory preview features page",
     "route": "/default-directory/preview-features",
-    "tags": ["entra", "directory", "preview"]
+    "topics": ["entra", "directory", "preview"]
   },
   "container": "azure",
   "sideNav": {

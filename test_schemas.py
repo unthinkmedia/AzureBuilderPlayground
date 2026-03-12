@@ -107,7 +107,7 @@ def test_preview_features_page():
         meta=PageMeta(
             title="Preview features",
             route="/default-directory/preview-features",
-            tags=["entra", "directory"],
+            topics=["entra", "directory"],
         ),
 
         # Q1: What container? → Azure

@@ -36,7 +36,7 @@ Complete reference for the `PageSchema` Pydantic model defined in `schemas/page.
   "title": "Page Name",                    // required, min 1 char
   "description": "What this page does",    // optional
   "route": "/resource/page",               // optional URL route
-  "tags": ["tag1", "tag2"]                 // optional
+  "topics": ["topic1", "topic2"]           // optional
 }
 ```
 

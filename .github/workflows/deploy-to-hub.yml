@@ -53,9 +53,9 @@ jobs:
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "description=$DESC" >> "$GITHUB_OUTPUT"
 
-          TAGS=$(find . -name '*.schema.json' -not -path './node_modules/*' \
-            -exec jq -r '.meta.tags // [] | .[]' {} + 2>/dev/null | sort -u | jq -Rsc 'split("\n") | map(select(length > 0))')
-          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+          TOPICS=$(find . -name '*.schema.json' -not -path './node_modules/*' \
+            -exec jq -r '.meta.topics // [] | .[]' {} + 2>/dev/null | sort -u | jq -Rsc 'split("\n") | map(select(length > 0))')
+          echo "topics=$TOPICS" >> "$GITHUB_OUTPUT"
 
           LAYOUT=$(find . -name '*.schema.json' -not -path './node_modules/*' \
             -exec jq -r '.meta.layout // empty' {} + 2>/dev/null | head -1)
@@ -96,7 +96,7 @@ jobs:
             "repoName": "${{ github.event.repository.name }}",
             "experimentName": "${{ steps.meta.outputs.name }}",
             "description": "${{ steps.meta.outputs.description }}",
-            "tags": ${{ steps.meta.outputs.tags }},
+            "topics": ${{ steps.meta.outputs.topics }},
             "layout": "${{ steps.meta.outputs.layout }}",
             "pageCount": ${{ steps.meta.outputs.pageCount }},
             "authorName": "${{ github.actor }}",

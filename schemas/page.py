@@ -413,7 +413,7 @@ class PageMeta(BaseModel):
     title: str = Field(..., min_length=1)
     description: str = Field("")
     route: str = Field("", description="URL route path, e.g. '/overview'")
-    tags: list[str] = Field(default_factory=list)
+    topics: list[str] = Field(default_factory=list)
 
 
 class PageSchema(BaseModel):
