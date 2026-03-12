@@ -150,13 +150,35 @@ const useStyles = makeStyles({
   },
 });
 
+// ─── Hash helpers ───────────────────────────────────────────────
+function parseHash(): { version?: string; screen?: string } {
+  const raw = window.location.hash.replace(/^#\/?/, '');
+  if (!raw) return {};
+  const [version, screen] = raw.split('/');
+  return { version: version || undefined, screen: screen || undefined };
+}
+
+function writeHash(version: string, screen?: string) {
+  const fragment = screen && screen !== 'Main'
+    ? `${version}/${screen}`
+    : version;
+  window.history.replaceState(null, '', `#${fragment}`);
+}
+
 // ─── App ────────────────────────────────────────────────────────
 const App: React.FC = () => {
   const styles = useStyles();
   const versions = useMemo(() => buildVersions(), []);
 
-  const [activeVersionKey, setActiveVersionKey] = useState(versions[0]?.key ?? 'main');
-  const [activeScreen, setActiveScreen] = useState<string>('Main');
+  // Initialise from hash, falling back to first version
+  const initialHash = useMemo(() => parseHash(), []);
+  const initialVersion =
+    versions.find((v) => v.key === initialHash.version)?.key
+    ?? versions[0]?.key
+    ?? 'main';
+
+  const [activeVersionKey, setActiveVersionKey] = useState(initialVersion);
+  const [activeScreen, setActiveScreen] = useState<string>(initialHash.screen ?? 'Main');
 
   const activeVersion = versions.find((v) => v.key === activeVersionKey) ?? versions[0];
 
@@ -165,16 +187,42 @@ const App: React.FC = () => {
     if (!activeVersion) return [];
     if (activeVersion.flow) return activeVersion.flow;
     const keys = Object.keys(activeVersion.screens);
-    // If there's only an "index" screen, just show it without tabs
     return keys;
   }, [activeVersion]);
 
-  // Reset screen when switching versions
+  // Reset screen when switching versions (but not on initial mount from hash)
+  const isInitialMount = React.useRef(true);
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      // On first mount, validate the hash-provided screen exists
+      if (!screenNames.includes(activeScreen) && screenNames.length > 0) {
+        setActiveScreen(screenNames[0]);
+      }
+      return;
+    }
     if (screenNames.length > 0) {
       setActiveScreen(screenNames[0]);
     }
   }, [activeVersionKey, screenNames]);
+
+  // Sync hash on state changes
+  useEffect(() => {
+    writeHash(activeVersionKey, activeScreen);
+  }, [activeVersionKey, activeScreen]);
+
+  // Respond to browser back/forward
+  useEffect(() => {
+    const onHashChange = () => {
+      const { version, screen } = parseHash();
+      if (version && versions.some((v) => v.key === version)) {
+        setActiveVersionKey(version);
+        if (screen) setActiveScreen(screen);
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [versions]);
 
   const ActiveComponent = activeVersion?.screens[activeScreen];
   const showStepTabs = screenNames.length > 1;
